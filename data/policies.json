@@ -1,0 +1,275 @@
+[
+  {
+    "category": "travel",
+    "section": "trip_fields",
+    "workflows": [
+      "pre_trip"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "trip_fields"
+    },
+    "chunk_id": "POL-001@1.0",
+    "doc_id": "TRAINING-TRAVEL",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Yêu cầu công tác cần có điểm đến, ngày đi, ngày về và mục đích."
+  },
+  {
+    "category": "approval",
+    "section": "approval",
+    "workflows": [
+      "pre_trip"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "approval"
+    },
+    "chunk_id": "POL-002@1.0",
+    "doc_id": "TRAINING-APPROVAL",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Chỉ tạo draft tác nghiệp khi approval mô phỏng của chuyến đi là approved; pending hoặc rejected phải dừng."
+  },
+  {
+    "category": "visa",
+    "section": "visa",
+    "workflows": [
+      "pre_trip"
+    ],
+    "destinations": [
+      "Singapore"
+    ],
+    "rule": {
+      "kind": "visa"
+    },
+    "chunk_id": "POL-003@1.0",
+    "doc_id": "TRAINING-VISA",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Với Singapore trong bộ dữ liệu training, checklist cần có bước nhờ reviewer kiểm tra yêu cầu nhập cảnh mô phỏng."
+  },
+  {
+    "category": "insurance",
+    "section": "insurance",
+    "workflows": [
+      "pre_trip"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "insurance"
+    },
+    "chunk_id": "POL-004@1.0",
+    "doc_id": "TRAINING-INSURANCE",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Checklist trước chuyến đi cần có bước kiểm tra bảo hiểm công tác mô phỏng với reviewer."
+  },
+  {
+    "category": "expense",
+    "section": "receipts",
+    "workflows": [
+      "expense"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "receipts"
+    },
+    "chunk_id": "POL-005@1.0",
+    "doc_id": "TRAINING-EXPENSE",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Mọi dòng chi phí cần chứng từ và ngày chi; thiếu thông tin phải bổ sung trước khi rà soát hoàn tất."
+  },
+  {
+    "category": "expense",
+    "section": "expense_review",
+    "workflows": [
+      "expense"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "expense_review"
+    },
+    "chunk_id": "POL-006@1.0",
+    "doc_id": "TRAINING-EXPENSE",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Rà soát chi phí chỉ tạo bản nháp cho reviewer; không xác nhận hoàn tiền hay phê duyệt chi phí."
+  },
+  {
+    "category": "travel",
+    "section": "delay",
+    "workflows": [
+      "in_trip"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "delay"
+    },
+    "chunk_id": "POL-007@1.0",
+    "doc_id": "TRAINING-TRAVEL",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Khi chuyến bay mô phỏng bị delay, chuẩn bị support draft cho Travel Operations; không tự đổi vé hay chi tiền."
+  },
+  {
+    "category": "travel",
+    "section": "cancellation",
+    "workflows": [
+      "in_trip"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "cancellation"
+    },
+    "chunk_id": "POL-008@1.0",
+    "doc_id": "TRAINING-TRAVEL",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Khi chuyến bay mô phỏng bị hủy, chuẩn bị escalation draft và chuyển người phụ trách xem xét."
+  },
+  {
+    "category": "expense",
+    "section": "daily_limit_meal",
+    "workflows": [
+      "expense"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "daily_limit",
+      "category": "meal",
+      "currency": "SGD",
+      "limit_minor": 6000
+    },
+    "chunk_id": "POL-009@1.0",
+    "doc_id": "TRAINING-EXPENSE",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Ngưỡng rà soát training cho meal là 6000 minor units SGD/ngày; vượt ngưỡng cần reviewer xem xét."
+  },
+  {
+    "category": "expense",
+    "section": "daily_limit_hotel",
+    "workflows": [
+      "expense"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "daily_limit",
+      "category": "hotel",
+      "currency": "SGD",
+      "limit_minor": 20000
+    },
+    "chunk_id": "POL-010@1.0",
+    "doc_id": "TRAINING-EXPENSE",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Ngưỡng rà soát training cho hotel là 20000 minor units SGD/ngày; vượt ngưỡng cần reviewer xem xét."
+  },
+  {
+    "category": "expense",
+    "section": "daily_limit_transport",
+    "workflows": [
+      "expense"
+    ],
+    "destinations": [
+      "*"
+    ],
+    "rule": {
+      "kind": "daily_limit",
+      "category": "transport",
+      "currency": "SGD",
+      "limit_minor": 5000
+    },
+    "chunk_id": "POL-011@1.0",
+    "doc_id": "TRAINING-EXPENSE",
+    "source": "data/policies.json",
+    "version": "1.0",
+    "active": true,
+    "access_roles": [
+      "employee",
+      "reviewer",
+      "approver"
+    ],
+    "text": "Ngưỡng rà soát training cho transport là 5000 minor units SGD/ngày; vượt ngưỡng cần reviewer xem xét."
+  }
+]

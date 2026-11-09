@@ -2,6 +2,15 @@
 
 Prototype học tập cho Agent hỗ trợ vận hành công tác quốc tế trên dữ liệu giả lập. Thiết kế dùng workflow có giới hạn, function calling theo allowlist, policy evidence, artifact dạng draft và trace phục vụ đánh giá. Không thực hiện đặt dịch vụ, thanh toán, hoàn tiền hoặc liên lạc thật.
 
+## Backend trên nhánh `backend`
+
+Backend FastAPI, CLI và adapter Gemini function calling nằm trong `backend/` và `travel_agent/`.
+Xem [hướng dẫn backend](docs/backend/README.md) để cài đặt, chạy demo và gọi API.
+
+Phần này được bổ sung từ nhánh `huy`. Workflow ở `src/`, fixture trong `data/mock-systems/`
+và bài test gốc `tests/test_workflows.py` được giữ nguyên. Backend hiện chạy bộ fixture riêng
+`data/training.json` và `data/policies.json`; chưa nối adapter với bộ fixture của workflow gốc.
+
 ## Cấu trúc
 
 - `docs/agent-design/`: tài liệu kiến trúc và contract.

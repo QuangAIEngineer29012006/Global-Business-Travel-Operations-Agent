@@ -17,3 +17,21 @@ data/processed/*.tmp.sqlite
 Thumbs.db
 
 __pycache__/
+
+# Backend runtime and local settings
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.env
+workspace/
+*.pyc
+.DS_Store
+
+*.sqlite-wal
+*.sqlite-shm
+*.db-wal
+*.db-shm
+
+# Generated CLI demo output
+/artifacts/demo.json

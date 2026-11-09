@@ -1,0 +1,400 @@
+{
+  "users": [
+    {
+      "user_id": "demo-an",
+      "role": "employee",
+      "traveler_id": "TRV-001"
+    },
+    {
+      "user_id": "demo-binh",
+      "role": "employee",
+      "traveler_id": "TRV-002"
+    },
+    {
+      "user_id": "demo-chi",
+      "role": "employee",
+      "traveler_id": "TRV-003"
+    },
+    {
+      "user_id": "demo-dung",
+      "role": "employee",
+      "traveler_id": "TRV-004"
+    },
+    {
+      "user_id": "demo-reviewer",
+      "role": "reviewer",
+      "traveler_id": null
+    },
+    {
+      "user_id": "demo-approver",
+      "role": "approver",
+      "traveler_id": null
+    }
+  ],
+  "profiles": [
+    {
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "department": "Engineering",
+      "preference": {
+        "seat": "aisle"
+      }
+    },
+    {
+      "traveler_id": "TRV-002",
+      "owner_id": "demo-binh",
+      "department": "Finance",
+      "preference": {
+        "seat": "window"
+      }
+    },
+    {
+      "traveler_id": "TRV-003",
+      "owner_id": "demo-chi",
+      "department": "Engineering",
+      "preference": {
+        "seat": "aisle"
+      }
+    },
+    {
+      "traveler_id": "TRV-004",
+      "owner_id": "demo-dung",
+      "department": "Finance",
+      "preference": {
+        "seat": "window"
+      }
+    }
+  ],
+  "trips": [
+    {
+      "trip_id": "TRIP-2026-001",
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "destination": "Singapore",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "planned"
+    },
+    {
+      "trip_id": "TRIP-2026-002",
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "destination": "Singapore",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "in_progress"
+    },
+    {
+      "trip_id": "TRIP-2026-003",
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "destination": "Tokyo",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "planned"
+    },
+    {
+      "trip_id": "TRIP-2026-004",
+      "traveler_id": "TRV-002",
+      "owner_id": "demo-binh",
+      "destination": "Seoul",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "planned"
+    },
+    {
+      "trip_id": "TRIP-2026-005",
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "destination": "Singapore",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": null,
+      "status": "planned"
+    },
+    {
+      "trip_id": "TRIP-2026-006",
+      "traveler_id": "TRV-002",
+      "owner_id": "demo-binh",
+      "destination": "Frankfurt",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "cancelled"
+    },
+    {
+      "trip_id": "TRIP-2026-007",
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "destination": "Singapore",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "completed"
+    },
+    {
+      "trip_id": "TRIP-2026-008",
+      "traveler_id": "TRV-003",
+      "owner_id": "demo-chi",
+      "destination": "Seoul",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "in_progress"
+    },
+    {
+      "trip_id": "TRIP-2026-009",
+      "traveler_id": "TRV-001",
+      "owner_id": "demo-an",
+      "destination": "Singapore",
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-22",
+      "purpose": "Training workshop (synthetic)",
+      "status": "planned"
+    }
+  ],
+  "approvals": [
+    {
+      "trip_id": "TRIP-2026-001",
+      "status": "approved",
+      "approval_id": "APR-001",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-002",
+      "status": "approved",
+      "approval_id": "APR-002",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-003",
+      "status": "pending",
+      "approval_id": "APR-003",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-004",
+      "status": "rejected",
+      "approval_id": "APR-004",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-005",
+      "status": "approved",
+      "approval_id": "APR-005",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-006",
+      "status": "rejected",
+      "approval_id": "APR-006",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-007",
+      "status": "approved",
+      "approval_id": "APR-007",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-008",
+      "status": "approved",
+      "approval_id": "APR-008",
+      "action_summary": "Review training travel request",
+      "mock": true
+    },
+    {
+      "trip_id": "TRIP-2026-009",
+      "status": "not_requested",
+      "approval_id": "APR-009",
+      "action_summary": "Review training travel request",
+      "mock": true
+    }
+  ],
+  "itineraries": [
+    {
+      "trip_id": "TRIP-2026-001",
+      "flight": "MOCK-FLIGHT-001",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "none",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-002",
+      "flight": "MOCK-FLIGHT-002",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "delayed",
+      "delay_minutes": 180
+    },
+    {
+      "trip_id": "TRIP-2026-003",
+      "flight": "MOCK-FLIGHT-003",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "none",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-004",
+      "flight": "MOCK-FLIGHT-004",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "none",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-005",
+      "flight": "MOCK-FLIGHT-005",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "none",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-006",
+      "flight": "MOCK-FLIGHT-006",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "cancelled",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-007",
+      "flight": "MOCK-FLIGHT-007",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "none",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-008",
+      "flight": "MOCK-FLIGHT-008",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "cancelled",
+      "delay_minutes": 0
+    },
+    {
+      "trip_id": "TRIP-2026-009",
+      "flight": "MOCK-FLIGHT-009",
+      "hotel": "Training Hotel",
+      "event": "Training workshop",
+      "disruption": "none",
+      "delay_minutes": 0
+    }
+  ],
+  "reports": [
+    {
+      "report_id": "EXP-2026-001",
+      "trip_id": "TRIP-2026-007",
+      "owner_id": "demo-an",
+      "status": "draft",
+      "currency": "SGD",
+      "items": [
+        {
+          "item_id": "ITEM-01",
+          "category": "meal",
+          "date": "2026-11-20",
+          "amount_minor": 4500,
+          "currency": "SGD",
+          "receipt": true
+        },
+        {
+          "item_id": "ITEM-02",
+          "category": "hotel",
+          "date": "2026-11-20",
+          "amount_minor": 18000,
+          "currency": "SGD",
+          "receipt": true
+        },
+        {
+          "item_id": "ITEM-03",
+          "category": "meal",
+          "date": "2026-11-21",
+          "amount_minor": 3000,
+          "currency": "SGD",
+          "receipt": true
+        }
+      ]
+    },
+    {
+      "report_id": "EXP-2026-002",
+      "trip_id": "TRIP-2026-007",
+      "owner_id": "demo-an",
+      "status": "draft",
+      "currency": "SGD",
+      "items": [
+        {
+          "item_id": "ITEM-01",
+          "category": "meal",
+          "date": "2026-11-20",
+          "amount_minor": null,
+          "currency": "SGD",
+          "receipt": false
+        },
+        {
+          "item_id": "ITEM-02",
+          "category": "hotel",
+          "date": null,
+          "amount_minor": 18000,
+          "currency": "SGD",
+          "receipt": true
+        },
+        {
+          "item_id": "ITEM-03",
+          "category": "meal",
+          "date": "2026-11-21",
+          "amount_minor": 3000,
+          "currency": "SGD",
+          "receipt": true
+        }
+      ]
+    },
+    {
+      "report_id": "EXP-2026-003",
+      "trip_id": "TRIP-2026-007",
+      "owner_id": "demo-an",
+      "status": "draft",
+      "currency": "SGD",
+      "items": [
+        {
+          "item_id": "ITEM-01",
+          "category": "meal",
+          "date": "2026-11-20",
+          "amount_minor": 12000,
+          "currency": "SGD",
+          "receipt": true
+        },
+        {
+          "item_id": "ITEM-02",
+          "category": "hotel",
+          "date": "2026-11-20",
+          "amount_minor": 30000,
+          "currency": "SGD",
+          "receipt": true
+        },
+        {
+          "item_id": "ITEM-03",
+          "category": "meal",
+          "date": "2026-11-21",
+          "amount_minor": 3000,
+          "currency": "SGD",
+          "receipt": true
+        }
+      ]
+    }
+  ]
+}
