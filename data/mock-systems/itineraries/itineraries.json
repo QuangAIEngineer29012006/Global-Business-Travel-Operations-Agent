@@ -1,0 +1,123 @@
+[
+  {
+    "disruption_status": "none",
+    "trip_id": "TRIP-2026-001",
+    "itinerary_id": "ITIN-001",
+    "segments": [
+      {
+        "arrive_at": "2026-12-02T10:00:00+07:00",
+        "status": "planned",
+        "type": "flight",
+        "origin": "SGN",
+        "destination": "SIN",
+        "depart_at": "2026-12-02T08:00:00+07:00",
+        "segment_id": "SEG-001A"
+      },
+      {
+        "status": "not_booked_mock",
+        "type": "hotel",
+        "city": "Singapore",
+        "check_out": "2026-12-06",
+        "check_in": "2026-12-02",
+        "segment_id": "SEG-001B"
+      }
+    ],
+    "last_updated": "2026-11-01T12:00:00+07:00"
+  },
+  {
+    "disruption_status": "delayed",
+    "trip_id": "TRIP-2026-002",
+    "itinerary_id": "ITIN-002",
+    "segments": [
+      {
+        "origin": "SIN",
+        "arrive_at": "2026-12-10T16:00:00+07:00",
+        "type": "flight",
+        "segment_id": "SEG-002A",
+        "disruption_note": "Mock delay: 150 minutes",
+        "destination": "HND",
+        "depart_at": "2026-12-10T08:00:00+07:00",
+        "status": "delayed"
+      },
+      {
+        "status": "planned_mock",
+        "type": "hotel",
+        "city": "Tokyo",
+        "check_out": "2026-12-15",
+        "check_in": "2026-12-10",
+        "segment_id": "SEG-002B"
+      }
+    ],
+    "last_updated": "2026-12-10T06:30:00+07:00"
+  },
+  {
+    "disruption_status": "cancelled",
+    "trip_id": "TRIP-2026-003",
+    "itinerary_id": "ITIN-003",
+    "segments": [
+      {
+        "origin": "SGN",
+        "arrive_at": "2026-11-05T09:00:00+07:00",
+        "type": "flight",
+        "segment_id": "SEG-003A",
+        "disruption_note": "Mock cancellation; no rebooking performed",
+        "destination": "BKK",
+        "depart_at": "2026-11-05T07:00:00+07:00",
+        "status": "cancelled"
+      }
+    ],
+    "last_updated": "2026-11-05T10:00:00+07:00"
+  },
+  {
+    "disruption_status": "none",
+    "trip_id": "TRIP-2026-004",
+    "itinerary_id": "ITIN-004",
+    "segments": [
+      {
+        "arrive_at": "2026-12-19T13:00:00+07:00",
+        "status": "planned_mock",
+        "type": "flight",
+        "origin": "SGN",
+        "destination": "BER",
+        "depart_at": "2026-12-18T22:00:00+07:00",
+        "segment_id": "SEG-004A"
+      }
+    ],
+    "last_updated": "2026-11-03T16:00:00+07:00"
+  },
+  {
+    "itinerary_id": "ITIN-005",
+    "trip_id": "TRIP-2026-007",
+    "segments": [
+      {
+        "type": "flight",
+        "depart_at": "2027-01-15T22:00:00+07:00",
+        "origin": "SGN",
+        "arrive_at": "2027-01-16T07:00:00-05:00",
+        "destination": "YYZ",
+        "segment_id": "SEG-005A",
+        "status": "planned_mock"
+      }
+    ],
+    "disruption_status": "none",
+    "last_updated": "2026-11-05T12:00:00+07:00"
+  },
+  {
+    "itinerary_id": "ITIN-006",
+    "trip_id": "TRIP-2026-008",
+    "segments": [
+      {
+        "depart_at": "2026-12-08T06:00:00+07:00",
+        "type": "flight",
+        "disruption_note": "Mock delay: 75 minutes",
+        "destination": "MNL",
+        "arrive_at": "2026-12-08T10:00:00+08:00",
+        "status": "delayed",
+        "segment_id": "SEG-006A",
+        "origin": "SGN"
+      }
+    ],
+    "disruption_status": "delayed",
+    "last_updated": "2026-12-08T08:30:00+08:00"
+  }
+]

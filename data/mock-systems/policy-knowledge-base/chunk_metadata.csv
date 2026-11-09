@@ -1,0 +1,10 @@
+"chunk_id","doc_id","source","section","page","version","category"
+"CHUNK-001","DOC-TRAVEL-001","Mock Global Travel Handbook","Approval before commitment","","1.0","travel"
+"CHUNK-002","DOC-TRAVEL-001","Mock Global Travel Handbook","Planning checklist","","1.0","travel"
+"CHUNK-003","DOC-EXPENSE-001","Mock Expense Standard","Receipts","","2.1","expense"
+"CHUNK-004","DOC-EXPENSE-001","Mock Expense Standard","Meals and review threshold","","2.1","expense"
+"CHUNK-005","DOC-VISA-001","Mock International Readiness Guide","Entry requirement check","","1.2","visa"
+"CHUNK-006","DOC-VISA-001","Mock International Readiness Guide","Document readiness","","1.2","visa"
+"CHUNK-007","DOC-SAFETY-001","Mock Travel Safety and Coverage Note","Disruption escalation","","1.0","insurance"
+"CHUNK-008","DOC-SAFETY-001","Mock Travel Safety and Coverage Note","Coverage questions","","1.0","insurance"
+CHUNK-009,DOC-APPROVAL-001,Mock Approval Workflow Guide,Pending decisions,,1.0,approval

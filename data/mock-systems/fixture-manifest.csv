@@ -1,0 +1,4 @@
+"scenario","fixture_ids","related_trip","expected_branch"
+"Expense valid","EXP-2026-001","TRIP-2026-003","Deterministic summary; receipt complete"
+"Expense missing receipt","EXP-2026-002","TRIP-2026-003","Flag for reviewer"
+"Expense above mock threshold","EXP-2026-003","TRIP-2026-003","Flag for reviewer; no reimbursement decision"

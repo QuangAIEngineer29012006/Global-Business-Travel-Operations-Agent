@@ -1,0 +1,5 @@
+{
+  "drafts": [],
+  "schema_version": "1.0",
+  "notes": "Empty sandbox store. Use draft_id, artifact_type, status, delivery_status, source_ids, content, created_at, idempotency_key. Never publish or send externally."
+}

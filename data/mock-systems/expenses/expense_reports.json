@@ -1,0 +1,80 @@
+[
+  {
+    "status": "submitted_mock",
+    "line_items": [
+      {
+        "date": "2026-11-05",
+        "category": "meals",
+        "receipt_present": true,
+        "currency": "USD",
+        "item_id": "LI-001",
+        "description": "Business meal, mock",
+        "amount": 48.5
+      },
+      {
+        "date": "2026-11-06",
+        "category": "ground_transport",
+        "receipt_present": true,
+        "currency": "USD",
+        "item_id": "LI-002",
+        "description": "Local transit, mock",
+        "amount": 22.0
+      }
+    ],
+    "report_id": "EXP-2026-001",
+    "submitted_at": "2026-11-08T12:00:00+07:00",
+    "currency": "USD",
+    "traveler_id": "EMP-003",
+    "trip_id": "TRIP-2026-003",
+    "receipts_status": "complete"
+  },
+  {
+    "status": "draft_mock",
+    "line_items": [
+      {
+        "date": "2026-11-05",
+        "category": "lodging",
+        "receipt_present": false,
+        "currency": "USD",
+        "item_id": "LI-003",
+        "description": "Hotel night, mock",
+        "amount": 210.0
+      }
+    ],
+    "report_id": "EXP-2026-002",
+    "submitted_at": "",
+    "currency": "USD",
+    "traveler_id": "EMP-003",
+    "trip_id": "TRIP-2026-003",
+    "receipts_status": "missing"
+  },
+  {
+    "status": "submitted_mock",
+    "line_items": [
+      {
+        "date": "2026-11-05",
+        "category": "lodging",
+        "receipt_present": true,
+        "currency": "USD",
+        "item_id": "LI-004",
+        "description": "Lodging total, mock; policy review required",
+        "amount": 980.0
+      },
+      {
+        "date": "2026-11-06",
+        "category": "meals",
+        "receipt_present": false,
+        "currency": "USD",
+        "item_id": "LI-005",
+        "description": "Meals, mock",
+        "amount": 155.0
+      }
+    ],
+    "report_id": "EXP-2026-003",
+    "submitted_at": "2026-11-08T15:00:00+07:00",
+    "currency": "USD",
+    "traveler_id": "EMP-003",
+    "trip_id": "TRIP-2026-003",
+    "receipts_status": "partial"
+  }
+]

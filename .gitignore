@@ -1,0 +1,17 @@
+# Python virtual environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Generated local database and transient SQLite files
+data/processed/*.sqlite
+data/processed/*.sqlite3
+data/processed/*.db
+data/processed/*.tmp.sqlite
+
+# Editor/OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+"approval_id","trip_id","report_id","request_type","status","action_summary","created_at"
+"APR-2026-001","TRIP-2026-001","","trip","pending","Review Singapore workshop trip request","2026-11-01T09:10:00+07:00"
+"APR-2026-002","TRIP-2026-002","","trip","approved","Approve Tokyo supplier review","2026-11-02T10:20:00+07:00"
+"APR-2026-003","TRIP-2026-005","","trip","rejected","Training request declined in mock scenario","2026-09-21T10:00:00+07:00"
+"APR-2026-004","","EXP-2026-003","expense","pending","Mock expense review pending human decision","2026-11-06T15:00:00+07:00"
+"APR-2026-005","TRIP-2026-007","","trip","pending","Review Toronto research meetings","2026-11-05T10:30:00+07:00"

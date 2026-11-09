@@ -1,0 +1,19 @@
+{
+  "source": "data/mock-systems",
+  "database": "data/processed/travel_agent.sqlite",
+  "counts": {
+    "traveler_profiles": 6,
+    "travel_requests": 8,
+    "itineraries": 6,
+    "itinerary_segments": 8,
+    "approvals": 5,
+    "expense_reports": 3,
+    "expense_line_items": 5,
+    "policy_documents": 5,
+    "policy_chunks": 9,
+    "draft_artifacts": 0
+  },
+  "error_count": 0,
+  "warning_count": 0,
+  "issues": []
+}
