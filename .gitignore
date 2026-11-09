@@ -15,3 +15,5 @@ data/processed/*.tmp.sqlite
 .idea/
 .DS_Store
 Thumbs.db
+
+__pycache__/
