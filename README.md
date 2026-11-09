@@ -11,6 +11,12 @@ Backend dùng trực tiếp workflow ở `src/workflows.py` và dispatcher/fixtu
 Phần LLM chỉ hỗ trợ trình bày kết quả; không có dataset, database, workflow hoặc RAG thứ hai.
 Native function calling được cung cấp dưới dạng adapter một lượt, có thể nối với dispatcher của nhóm.
 
+## Frontend demo
+
+Giao diện React/Vite được chuyển từ miniproject4 và nối với backend travel hiện tại.
+Có chat, sáu tình huống mẫu, kết quả, metadata bản nháp, citation và trace.
+Xem [cách chạy frontend](frontend/README.md). Frontend không bổ sung RAG mới.
+
 ## Cấu trúc
 
 - `docs/agent-design/`: tài liệu kiến trúc và contract.

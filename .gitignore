@@ -35,3 +35,8 @@ workspace/
 
 # Generated CLI demo output
 /artifacts/demo.json
+
+# Frontend dependencies and build output
+node_modules/
+frontend/dist/
+*.tsbuildinfo
