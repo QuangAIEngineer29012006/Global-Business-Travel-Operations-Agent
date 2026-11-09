@@ -1,6 +1,6 @@
 # Global Business Travel Operations Agent
 
-A learning prototype for a mock-only AI agent supporting international business travel operations. The project is designed around bounded workflows, allowlisted function calling, policy evidence, draft-only artifacts, and evaluation traces. It must not perform real bookings, payments, refunds, or external communications.
+AI Agent Mini Project: a learning prototype for a mock-only agent supporting international business travel operations. The project uses bounded workflows, allowlisted function calling, policy evidence, draft-only artifacts, and evaluation traces. It must not perform real bookings, payments, refunds, or external communications.
 
 ## Project contents
 
