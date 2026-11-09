@@ -1,15 +1,16 @@
 ---
 doc_id: DOC-TRAVEL-001
-source: Mock Global Travel Handbook
+source: Sổ tay công tác
 version: "1.0"
 effective_from: "2026-01-01"
 effective_to: null
 category: travel
 ---
-# Travel Planning (Mock)
+# Hướng dẫn chuẩn bị công tác 
 
-## Chunk CHUNK-001 — Approval before commitment
-A traveler should obtain trip approval before committing company funds. A submitted or pending request is not an approval. This training rule does not authorize an agent to book or purchase travel.
+## Chunk CHUNK-001 — Phê duyệt trước khi cam kết chi phí
+Nhân viên cần được phê duyệt chuyến đi trước khi cam kết sử dụng ngân sách công ty. Yêu cầu đã gửi hoặc đang chờ duyệt chưa đồng nghĩa với đã được duyệt. Quy tắc huấn luyện này không cho phép Agent đặt dịch vụ hoặc mua vé.
 
-## Chunk CHUNK-002 — Planning checklist
-Before departure, confirm destination, dates, business purpose, traveler contact plan, and any required internal review. If a required field is absent, request it instead of inferring it.
+## Chunk CHUNK-002 — Danh sách kiểm tra trước chuyến đi
+Trước ngày khởi hành, cần xác nhận điểm đến, ngày đi và về, mục đích công tác, phương án liên lạc và các bước rà soát nội bộ cần thiết. Nếu thiếu trường bắt buộc, hãy hỏi bổ sung thay vì tự suy đoán.
+

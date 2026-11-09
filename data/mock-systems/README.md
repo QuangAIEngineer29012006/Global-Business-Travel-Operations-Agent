@@ -1,42 +1,33 @@
-# Mock Systems and Dataset
+# Bộ dữ liệu giả lập
 
-Training-only fixtures for the Global Business Travel Operations Agent. All people, companies, policy text, amounts, itineraries, and events are invented. No external service or real booking is represented.
+Các fixture phục vụ huấn luyện prototype. Toàn bộ nhân vật, đơn vị, nội dung chính sách, số tiền, lịch trình và sự kiện đều hư cấu; không đại diện cho đặt chỗ thật hay chính sách có thẩm quyền.
 
-## Contents and formats
+## Thành phần và định dạng
 
-- `travel-requests/travel_requests.csv` — 6 trip records.
-- `traveler-profiles/traveler_profiles.json` — 4 profiles across 4 departments; non-sensitive preferences only.
-- `itineraries/itineraries.json` — 4 nested itinerary records; 2 disruption cases (delay and cancellation).
-- `approvals/approvals.csv` — pending, approved, rejected trip decisions plus pending expense review simulation.
-- `expenses/expense_reports.json` — 3 reports with valid, missing receipt, and reviewer-threshold scenarios.
-- `policy-knowledge-base/documents/*.md` — 4 fictional source documents containing 9 chunks across travel, expense, visa, insurance, and approval.
-- `policy-knowledge-base/chunk_metadata.csv` — retrieval/citation index; retain metadata through response generation.
-- `draft-workspace/drafts.json` — empty sandbox draft store.
+- `travel-requests/travel_requests.csv`: 8 yêu cầu chuyến đi.
+- `traveler-profiles/traveler_profiles.json`: 6 hồ sơ thuộc nhiều phòng ban; chỉ có sở thích không nhạy cảm.
+- `itineraries/itineraries.json`: 6 lịch trình dạng lồng nhau, có các ca delay và cancellation.
+- `approvals/approvals.csv`: quyết định chuyến đi và expense giả lập ở trạng thái pending, approved, rejected.
+- `expenses/expense_reports.json`: 3 báo cáo gồm chứng từ đầy đủ, thiếu chứng từ và cần reviewer rà soát.
+- `policy-knowledge-base/documents/*.md`: 5 tài liệu chính sách giả lập, tổng cộng 9 chunks thuộc travel, expense, visa, insurance và approval.
+- `policy-knowledge-base/chunk_metadata.csv`: chỉ mục metadata để truy xuất và tạo citations.
+- `draft-workspace/drafts.json`: kho draft sandbox ban đầu đang rỗng.
+- `fixture-manifest.csv`: mô tả các kịch bản và nhánh workflow dự kiến.
 
-## Fixture map
+## Quy ước dữ liệu
 
-| Scenario | Fixture IDs | Intended branch |
-|---|---|---|
-| Pre-trip awaiting approval | TRIP-2026-001 / APR-2026-001 | Do not claim approved; checklist draft or awaiting approval |
-| In-trip delay | TRIP-2026-002 / ITIN-002 | Support/escalation draft, no rebooking |
-| Expense valid | EXP-2026-001 | Deterministic summary; receipt complete |
-| Expense missing receipt | EXP-2026-002 | Flag for reviewer |
-| Expense above mock threshold | EXP-2026-003 | Flag for reviewer; no reimbursement decision |
-| Missing required cost center | TRIP-2026-004 | Ask for input |
-| Rejected/cancelled trip | TRIP-2026-005 / TRIP-2026-006 | Respect terminal source status |
-| In-trip cancellation | TRIP-2026-003 / ITIN-003 | Escalation draft; no rebooking |
+Tên cột/field, ID, enum trạng thái và tên tool giữ tiếng Anh để khớp schema code. Nội dung mô tả cho người dùng và văn bản policy dùng tiếng Việt. Ngày theo ISO-8601; ID chỉ là mã giả lập.
 
-## Data relationships
+## Quan hệ dữ liệu
 
-`trip_requests.traveler_id` references traveler profiles. Each itinerary references a trip. Expense reports reference trip and traveler. Approval rows reference trip or report. Policy chunk IDs are unique and map to the CSV metadata index.
+`trip_requests.traveler_id` trỏ tới traveler profile. Mỗi itinerary liên kết một trip. Expense report liên kết trip và traveler. Approval liên kết trip hoặc report. `chunk_id` trong metadata phải khớp chunk trong tài liệu policy.
 
-## Ingestion notes
+## Ghi chú nạp dữ liệu
 
-- Parse CSV as UTF-8; parse JSON as UTF-8 JSON arrays/objects.
-- Markdown YAML front matter identifies each document; chunk headings identify the chunk and section. Preserve `doc_id`, `source`, `version`, `category`, `chunk_id` and section when indexing.
-- One JSON file may contain an array at its top level. IDs are mock identifiers only.
-- The expense threshold in policy is fictional and is included only to exercise retrieval and reviewer flags.
+- Đọc CSV và JSON bằng UTF-8; JSON có thể là mảng ở cấp cao nhất.
+- Front matter YAML trong tài liệu Markdown chứa metadata tài liệu. Heading chunk chứa `chunk_id` và section; cần giữ `doc_id`, `source`, `version`, `category`, `chunk_id` và section khi index.
+- Ngưỡng expense trong policy là giả lập, chỉ để kiểm thử truy xuất và gắn cờ reviewer.
 
-## Known limitations
+## Giới hạn
 
-No country-specific visa advice, live travel data, real policy, currency conversion, insurance coverage determination, production credentials, or personally identifying data is included. These documents are not authoritative policy.
+Dataset không có tư vấn thị thực theo quốc gia, dữ liệu du lịch trực tiếp, chính sách thật, quy đổi tiền tệ, kết luận phạm vi bảo hiểm, credential production hoặc PII. Không dùng nội dung này làm hướng dẫn có thẩm quyền.

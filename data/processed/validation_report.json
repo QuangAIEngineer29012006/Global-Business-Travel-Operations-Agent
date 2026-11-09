@@ -1,6 +1,6 @@
 {
-  "source": "data/mock-systems",
-  "database": "data/processed/travel_agent.sqlite",
+  "source": "C:\\Users\\QuangDaoNgoc\\Desktop\\AI Agent mini project\\data\\mock-systems",
+  "database": "C:\\Users\\QuangDaoNgoc\\Desktop\\AI Agent mini project\\data\\processed\\travel_agent.sqlite",
   "counts": {
     "traveler_profiles": 6,
     "travel_requests": 8,

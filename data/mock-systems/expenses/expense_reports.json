@@ -8,7 +8,7 @@
         "receipt_present": true,
         "currency": "USD",
         "item_id": "LI-001",
-        "description": "Business meal, mock",
+        "description": "Bữa ăn công tác",
         "amount": 48.5
       },
       {
@@ -17,7 +17,7 @@
         "receipt_present": true,
         "currency": "USD",
         "item_id": "LI-002",
-        "description": "Local transit, mock",
+        "description": "Di chuyển nội đô",
         "amount": 22.0
       }
     ],
@@ -37,7 +37,7 @@
         "receipt_present": false,
         "currency": "USD",
         "item_id": "LI-003",
-        "description": "Hotel night, mock",
+        "description": "Một đêm khách sạn",
         "amount": 210.0
       }
     ],
@@ -57,7 +57,7 @@
         "receipt_present": true,
         "currency": "USD",
         "item_id": "LI-004",
-        "description": "Lodging total, mock; policy review required",
+        "description": "Tổng tiền lưu trú; cần đối chiếu chính sách",
         "amount": 980.0
       },
       {
@@ -66,7 +66,7 @@
         "receipt_present": false,
         "currency": "USD",
         "item_id": "LI-005",
-        "description": "Meals, mock",
+        "description": "Chi phí bữa ăn",
         "amount": 155.0
       }
     ],

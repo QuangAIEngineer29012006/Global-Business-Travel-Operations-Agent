@@ -34,7 +34,7 @@
         "arrive_at": "2026-12-10T16:00:00+07:00",
         "type": "flight",
         "segment_id": "SEG-002A",
-        "disruption_note": "Mock delay: 150 minutes",
+        "disruption_note": "Chuyến bay bị trễ 150 phút",
         "destination": "HND",
         "depart_at": "2026-12-10T08:00:00+07:00",
         "status": "delayed"
@@ -60,7 +60,7 @@
         "arrive_at": "2026-11-05T09:00:00+07:00",
         "type": "flight",
         "segment_id": "SEG-003A",
-        "disruption_note": "Mock cancellation; no rebooking performed",
+        "disruption_note": "Chuyến bay bị hủy; chưa thực hiện đặt lại",
         "destination": "BKK",
         "depart_at": "2026-11-05T07:00:00+07:00",
         "status": "cancelled"
@@ -93,7 +93,7 @@
         "type": "flight",
         "depart_at": "2027-01-15T22:00:00+07:00",
         "origin": "SGN",
-        "arrive_at": "2027-01-16T07:00:00-05:00",
+        "arrive_at": "2027-01-16T19:00:00+07:00",
         "destination": "YYZ",
         "segment_id": "SEG-005A",
         "status": "planned_mock"
@@ -109,15 +109,15 @@
       {
         "depart_at": "2026-12-08T06:00:00+07:00",
         "type": "flight",
-        "disruption_note": "Mock delay: 75 minutes",
+        "disruption_note": "Chuyến bay bị trễ 75 phút",
         "destination": "MNL",
-        "arrive_at": "2026-12-08T10:00:00+08:00",
+        "arrive_at": "2026-12-08T09:00:00+07:00",
         "status": "delayed",
         "segment_id": "SEG-006A",
         "origin": "SGN"
       }
     ],
     "disruption_status": "delayed",
-    "last_updated": "2026-12-08T08:30:00+08:00"
+    "last_updated": "2026-12-08T07:30:00+07:00"
   }
 ]

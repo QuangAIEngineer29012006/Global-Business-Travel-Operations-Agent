@@ -2,37 +2,37 @@
   {
     "traveler_id": "EMP-001",
     "department": "Finance",
-    "preferences": "aisle_seat",
+    "preferences": "Ghế lối đi",
     "home_region": "APAC"
   },
   {
     "traveler_id": "EMP-002",
     "department": "Supply_Chain",
-    "preferences": "morning_departure",
+    "preferences": "Ưu tiên chuyến khởi hành buổi sáng",
     "home_region": "APAC"
   },
   {
     "traveler_id": "EMP-003",
     "department": "Customer_Success",
-    "preferences": "vegetarian_meal",
+    "preferences": "Suất ăn chay",
     "home_region": "APAC"
   },
   {
     "traveler_id": "EMP-004",
     "department": "Product",
-    "preferences": "direct_route_preferred",
+    "preferences": "Ưu tiên hành trình bay thẳng",
     "home_region": "APAC"
   },
   {
     "department": "Research",
     "traveler_id": "EMP-005",
     "home_region": "APAC",
-    "preferences": "window_seat"
+    "preferences": "Ghế cạnh cửa sổ"
   },
   {
     "department": "Operations",
     "traveler_id": "EMP-006",
     "home_region": "APAC",
-    "preferences": "early_check_in_preferred"
+    "preferences": "Ưu tiên nhận phòng sớm"
   }
 ]

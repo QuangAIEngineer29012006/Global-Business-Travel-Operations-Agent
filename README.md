@@ -1,30 +1,24 @@
 # Global Business Travel Operations Agent
 
-AI Agent Mini Project: a learning prototype for a mock-only agent supporting international business travel operations. The project uses bounded workflows, allowlisted function calling, policy evidence, draft-only artifacts, and evaluation traces. It must not perform real bookings, payments, refunds, or external communications.
+Prototype học tập cho Agent hỗ trợ vận hành công tác quốc tế trên dữ liệu giả lập. Thiết kế dùng workflow có giới hạn, function calling theo allowlist, policy evidence, artifact dạng draft và trace phục vụ đánh giá. Không thực hiện đặt dịch vụ, thanh toán, hoàn tiền hoặc liên lạc thật.
 
-## Project contents
+## Cấu trúc
 
-- `docs/agent-design/` — architecture and contracts for the agent, tools, domain data, and workflow integration.
-- `data/mock-systems/` — fictional source fixtures in CSV, JSON, and Markdown formats.
-- `scripts/preprocess_to_sqlite.py` — standard-library preprocessing and SQLite seed pipeline.
-- `data/processed/` — generated SQLite database and validation report (database is ignored by Git and can be regenerated).
+- `docs/agent-design/`: tài liệu kiến trúc và contract.
+- `data/mock-systems/`: fixture giả lập CSV, JSON và Markdown; nội dung dữ liệu bằng tiếng Việt, schema/ID/enum giữ tiếng Anh.
+- `scripts/preprocess_to_sqlite.py`: kiểm tra, chuẩn hóa và nạp fixture vào SQLite bằng Python standard library.
+- `data/processed/`: database và báo cáo validation được sinh; database không đưa vào Git.
 
-## Prepare the local SQLite database
+## Tạo database cục bộ
 
-From the repository root, run:
+Từ thư mục gốc dự án:
 
 ```powershell
 python scripts/preprocess_to_sqlite.py
 ```
 
-Optional paths:
+Có thể truyền đường dẫn riêng bằng `--source data/mock-systems --output data/processed/travel_agent.sqlite`. Script không sửa fixture nguồn; lỗi đọc/validation được ghi vào `data/processed/validation_report.json`.
 
-```powershell
-python scripts/preprocess_to_sqlite.py --source data/mock-systems --output data/processed/travel_agent.sqlite
-```
+## An toàn dữ liệu
 
-The script validates identifiers, required fields, dates, references, policy front matter/chunk metadata, and SQLite foreign keys. Invalid records are reported in `data/processed/validation_report.json`; source fixtures are not modified. Python standard library only is required.
-
-## Data safety
-
-All records and policy content are fictional training fixtures. Do not add real traveler PII, credentials, payment data, or production policy. The generated database is local output and is excluded from version control.
+Mọi nhân vật, khoản chi và policy đều hư cấu. Không thêm PII thật, credential, thông tin thanh toán hoặc policy production.
