@@ -138,7 +138,8 @@ class GeminiClient:
         return result
 
     def rewrite(self, text):
-        result = self._generate(REWRITE_PROMPT, [{"role": "user", "parts": [{"text": text}]}])
+        prompt = json.dumps({"TEXT_TO_REWRITE": text}, ensure_ascii=False)
+        result = self._generate(REWRITE_PROMPT, [{"role": "user", "parts": [{"text": prompt}]}])
         result.value = self._text(result)
         return result
 

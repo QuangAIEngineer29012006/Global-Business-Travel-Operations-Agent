@@ -38,6 +38,8 @@ def test_rewrite_is_a_text_generation_call(monkeypatch):
     result = client().rewrite("tôi bị trễ chuyến bay, giúp với")
     assert result.value == "Tôi cần hỗ trợ vì chuyến bay bị trễ."
     assert "responseMimeType" not in post.call_args.kwargs["json"]["generationConfig"]
+    prompt = post.call_args.kwargs["json"]["contents"][0]["parts"][0]["text"]
+    assert parse_json(prompt) == {"TEXT_TO_REWRITE": "tôi bị trễ chuyến bay, giúp với"}
 
 
 @pytest.mark.parametrize("raw", ['{"highlight_ids":[],"highlight_ids":["approval"]}', '{"x": NaN}', '```json\n{}\n```', ''])

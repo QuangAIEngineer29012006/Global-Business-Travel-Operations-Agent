@@ -118,7 +118,21 @@ Test gồm workflow gốc, request mẫu contract, đúng fixture/role, giới h
 fallback không đổi approval/số liệu/citation, text rewrite không retrieval, timeout/retry, function calling
 native qua HTTP mock, arguments bị cấm và thought signature round-trip.
 
-Chưa gọi Gemini thật vì chưa có model/key được cấu hình trong project. Kết quả offline không đo chất lượng Gemini.
+Ngày 09/11/2026 đã chạy Gemini thật với `gemini-3.5-flash-lite`: **8/8 smoke cases pass**
+(ba workflow, pending approval, text rewrite giữ yêu cầu hỗ trợ, native function call, function response round-trip,
+và endpoint API với Gemini). Bằng chứng, latency và token usage ở
+[`artifacts/gemini_live_smoke.json`](../../artifacts/gemini_live_smoke.json).
+Lần chạy thật phát hiện prompt rewrite trả lời như nhân viên hỗ trợ; đã sửa để giữ góc nhìn người viết và đủ ý gốc.
+
+Chạy lại khi muốn kiểm tra API thật (cần cài cả `requirements-dev.txt`):
+
+```bash
+python scripts/smoke_gemini.py --live
+```
+
+Lệnh dùng quota Gemini và dừng ngay khi một case fail; không lưu API key hoặc thought signature vào báo cáo.
+`.env` cục bộ được chuyển từ project LLM trước, chỉ lấy các biến LLM cần thiết, có quyền file `600` và được Git bỏ qua.
+Kết quả smoke chỉ xác nhận các ví dụ training này, không thay thế evaluation chất lượng trên tập độc lập.
 Auth/session, persistence/draft idempotency lâu dài, phê duyệt, evaluation toàn project và RAG thuộc lớp chung.
 Hành vi checklist pending của workflow gốc được giữ theo contract 06; nhóm cần thống nhất điểm này với câu chữ
 approval/write boundary ở PDF trước khi nghiệm thu toàn project.
