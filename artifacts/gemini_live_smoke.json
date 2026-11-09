@@ -1,5 +1,5 @@
 {
-  "tested_at_utc": "2026-11-09T07:58:37.612533+00:00",
+  "tested_at_utc": "2026-11-09T08:15:16.439100+00:00",
   "model": "gemini-3.5-flash-lite",
   "provider": "gemini",
   "live_api": true,
@@ -8,29 +8,29 @@
     {
       "case": "pre_trip_approved",
       "passed": true,
-      "seconds": 2.624,
+      "seconds": 1.205,
       "workflow": "pre_trip",
       "outcome": "completed",
       "llm_message": "Đã tạo checklist draft (chưa gửi).",
       "input_tokens": 175,
-      "output_tokens": 11,
+      "output_tokens": 7,
       "retry_count": 0
     },
     {
       "case": "in_trip_delay",
       "passed": true,
-      "seconds": 1.497,
+      "seconds": 1.039,
       "workflow": "in_trip",
       "outcome": "completed",
       "llm_message": "Đã tạo ghi chú chuyển cấp (draft, chưa gửi). Dữ kiện lấy từ itinerary; hướng dẫn lấy từ policy có trích dẫn.",
       "input_tokens": 161,
-      "output_tokens": 7,
+      "output_tokens": 11,
       "retry_count": 0
     },
     {
       "case": "expense_review",
       "passed": true,
-      "seconds": 8.569,
+      "seconds": 2.159,
       "workflow": "post_trip",
       "outcome": "completed",
       "llm_message": "Đã tạo review draft: không có cờ theo quy tắc ngưỡng đã cấu hình. Chưa phải quyết định hoàn tiền/phê duyệt. Tổng do tool tính: 70.5 USD. Bản nháp DRAFT-2026-003: delivery_status=not_sent.",
@@ -41,7 +41,7 @@
     {
       "case": "pending_approval",
       "passed": true,
-      "seconds": 7.653,
+      "seconds": 1.205,
       "workflow": "pre_trip",
       "outcome": "awaiting_approval",
       "llm_message": "Đã tạo checklist draft. Yêu cầu đang chờ phê duyệt, chưa được duyệt. Chờ người phê duyệt quyết định.",
@@ -52,24 +52,18 @@
     {
       "case": "text_rewrite",
       "passed": true,
-      "seconds": 1.38,
+      "seconds": 1.594,
       "workflow": "direct",
       "outcome": "completed",
-      "llm_message": "Tôi bị trễ chuyến bay. Tôi cần được hỗ trợ.",
+      "llm_message": "Tôi bị trễ chuyến bay. Tôi cần được giúp đỡ.",
       "input_tokens": 289,
       "output_tokens": 13,
-      "retry_count": 0,
-      "semantic_checks": {
-        "preserves_speaker": true,
-        "preserves_help_request": true,
-        "does_not_answer_as_support": true
-      },
-      "retested_at_utc": "2026-11-09T07:59:46.435286+00:00"
+      "retry_count": 0
     },
     {
       "case": "native_function_call",
       "passed": true,
-      "seconds": 8.026,
+      "seconds": 1.014,
       "tool": "get_trip_request",
       "trip_id": "TRIP-2026-001",
       "observed_status": "pending_approval",
@@ -80,7 +74,7 @@
     {
       "case": "function_response_roundtrip",
       "passed": true,
-      "seconds": 8.47,
+      "seconds": 0.96,
       "answer": "pending_approval",
       "input_tokens": 459,
       "output_tokens": 3,
@@ -89,7 +83,7 @@
     {
       "case": "live_api_endpoint",
       "passed": true,
-      "seconds": 1.143,
+      "seconds": 1.318,
       "http_status": 200,
       "outcome": "awaiting_approval",
       "observed_approval": "pending",

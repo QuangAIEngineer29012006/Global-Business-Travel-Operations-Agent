@@ -13,9 +13,11 @@ from .prompts import PRESENTATION_PROMPT, REWRITE_PROMPT
 
 
 class LLMError(Exception):
-    def __init__(self, code, retry_count=0):
+    def __init__(self, code, retry_count=0, *, result=None):
         self.code = code
         self.retry_count = retry_count
+        self.input_tokens = result.input_tokens if result is not None else None
+        self.output_tokens = result.output_tokens if result is not None else None
         super().__init__(code)
 
 
@@ -93,19 +95,21 @@ class GeminiClient:
                 elif response.status_code != 200:
                     raise LLMError("llm_auth" if response.status_code in {401, 403} else "llm_request", attempt)
                 else:
+                    result = None
                     try:
                         body = response.json()
+                        usage = body.get("usageMetadata", {})
+                        result = ModelResult(None, usage.get("promptTokenCount"), usage.get("candidatesTokenCount"), attempt)
                         candidate = body["candidates"][0]
                         if body.get("promptFeedback", {}).get("blockReason") or candidate.get("finishReason") != "STOP":
-                            raise LLMError("llm_refusal", attempt)
+                            raise LLMError("llm_refusal", attempt, result=result)
                         content = candidate["content"]
                         if content.get("role") != "model" or not isinstance(content["parts"], list):
                             raise ValueError("Malformed content")
-                        usage = body.get("usageMetadata", {})
-                        return ModelResult(copy.deepcopy(content), usage.get("promptTokenCount"),
-                                           usage.get("candidatesTokenCount"), attempt)
+                        result.value = copy.deepcopy(content)
+                        return result
                     except (ValueError, KeyError, IndexError, TypeError, AttributeError):
-                        raise LLMError("llm_response", attempt) from None
+                        raise LLMError("llm_response", attempt, result=result) from None
             if attempt == self.settings.max_retries:
                 raise LLMError(code, attempt)
             delay = _retry_delay(header, attempt)
@@ -124,7 +128,7 @@ class GeminiClient:
                 raise ValueError("Invalid text")
             return text.strip()
         except (ValueError, TypeError, AttributeError):
-            raise LLMError("llm_response", result.retry_count) from None
+            raise LLMError("llm_response", result.retry_count, result=result) from None
 
     def choose_highlights(self, message, highlights):
         prompt = json.dumps({"USER_MESSAGE": message, "HIGHLIGHTS": highlights}, ensure_ascii=False)
@@ -134,7 +138,7 @@ class GeminiClient:
         try:
             result.value = parse_json(self._text(result))
         except ValueError:
-            raise LLMError("llm_response", result.retry_count) from None
+            raise LLMError("llm_response", result.retry_count, result=result) from None
         return result
 
     def rewrite(self, text):
@@ -154,7 +158,7 @@ class GeminiClient:
             if len(calls) != 1 or calls[0]["name"] not in allowed_names or not isinstance(calls[0]["args"], dict):
                 raise ValueError("Invalid function call")
         except (KeyError, TypeError, ValueError):
-            raise LLMError("invalid_function_call", result.retry_count) from None
+            raise LLMError("invalid_function_call", result.retry_count, result=result) from None
         return result
 
 

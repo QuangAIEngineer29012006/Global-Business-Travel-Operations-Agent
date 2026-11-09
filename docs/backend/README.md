@@ -82,6 +82,7 @@ Workflow vẫn quyết định routing, trạng thái, phép tính, citation và
 render các câu đã xác minh; model không được thêm số tiền, đổi pending thành approved hay bịa citation.
 Đây là trình bày có ràng buộc, không phải một bộ viết narrative tự do hay kiểm tra entailment tổng quát.
 Nếu model lỗi hoặc trả ID ngoài danh sách, response giữ nguyên kết quả nghiệp vụ và đánh dấu `llm.status=fallback`.
+Fallback giữ token usage mà provider đã trả, ngay cả khi JSON/plan không hợp lệ; chỉ để `null` khi chưa có số liệu.
 
 Yêu cầu `Viết lại: ...` hoặc `Viết lại chuyên nghiệp: ...` gọi text generation một lần và không gọi tool/retrieval.
 Nó chỉ biên tập text người dùng cung cấp, không chứng thực trạng thái nghiệp vụ. Simulator ghi rõ chưa viết lại bằng LLM.
@@ -94,6 +95,8 @@ Backend không lưu raw conversation, không tạo persistent memory riêng. Mem
 `tool_turn()` chạy tối đa một proposal và một lời gọi dispatcher. Nó giới hạn tên tool, buộc arguments theo ID
 caller đã bind; dispatcher hiện có tiếp tục kiểm tra workflow/role/schema/domain. Function response và model content,
 kể cả thought signature, được giữ nguyên trong history tạm, không ghi log hoặc file mặc định.
+Trước khi trả observation cho model, adapter kiểm tra success có `data`/metadata nguồn và error có
+`code`, `message`, `retryable`; envelope thiếu trường hoặc có đồng thời success/error bị từ chối.
 
 ```bash
 python scripts/demo_llm.py --function-call

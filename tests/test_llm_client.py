@@ -6,6 +6,7 @@ import requests
 from backend.config import Settings
 from backend.function_calling import read_tool_declarations, tool_turn
 from backend.llm_client import GeminiClient, LLMError, parse_json
+from backend.service import LLMService
 from src.dev_systems import MockSystems
 
 
@@ -143,6 +144,60 @@ def test_native_requires_exactly_one_call(monkeypatch, parts):
     with pytest.raises(LLMError):
         tool_turn(client(), [], read_tool_declarations(ms.registry), ["get_trip_request"], ms, tool_context())
     assert ms.calls == []
+
+
+@pytest.mark.parametrize("observation", [
+    {"ok": True}, {"ok": False}, {"ok": 1, "data": {}},
+    {"ok": True, "data": None}, {"ok": True, "data": []},
+    {"ok": True, "data": {}, "meta": {}},
+    {"ok": True, "data": {}, "meta": {"source_system": " ", "read_only": True}},
+    {"ok": True, "data": {}, "meta": {"source_system": "mock", "read_only": "true"}},
+    {"ok": True, "data": {}, "meta": {"source_system": "mock", "read_only": True}, "error": {}},
+    {"ok": False, "error": {}},
+    {"ok": False, "error": {"code": 404, "message": "Not found", "retryable": False}},
+    {"ok": False, "error": {"code": "NOT_FOUND", "message": " ", "retryable": False}},
+    {"ok": False, "error": {"code": "NOT_FOUND", "message": "Not found", "retryable": "false"}},
+    {"ok": False, "data": {}, "error": {"code": "NOT_FOUND", "message": "Not found", "retryable": False}},
+])
+def test_incomplete_or_inconsistent_tool_result_is_not_sent_back_to_model(monkeypatch, observation):
+    ms = MockSystems()
+    monkeypatch.setattr("backend.llm_client.requests.post", Mock(return_value=envelope(tool_content()["parts"])))
+    history = [{"role": "user", "parts": [{"text": "Đọc TRIP-2026-001"}]}]
+    with pytest.raises(LLMError) as caught:
+        tool_turn(client(), history, read_tool_declarations(ms.registry), ["get_trip_request"],
+                  lambda *args: observation, tool_context())
+    assert caught.value.code == "invalid_tool_result"
+    assert caught.value.input_tokens == 18 and caught.value.output_tokens == 6
+    assert len(history) == 1
+
+
+@pytest.mark.parametrize("observation", [
+    {"ok": True, "data": {}, "meta": {"source_system": "mock", "read_only": True}},
+    {"ok": False, "error": {"code": "NOT_FOUND", "message": "Not found", "retryable": False}},
+])
+def test_valid_success_and_error_envelopes_pass_through_unchanged(monkeypatch, observation):
+    ms = MockSystems()
+    monkeypatch.setattr("backend.llm_client.requests.post", Mock(return_value=envelope(tool_content()["parts"])))
+    result = tool_turn(client(), [], read_tool_declarations(ms.registry), ["get_trip_request"],
+                       lambda *args: observation, tool_context())
+    assert result["observation"] == observation
+    assert result["contents"][-1]["parts"][0]["functionResponse"]["response"] == observation
+
+
+@pytest.mark.parametrize("parts,finish", [
+    ([{"text": "not JSON"}], "STOP"),
+    ([{"functionCall": {"name": "unexpected", "args": {}}}], "STOP"),
+    ([{"text": "truncated"}], "MAX_TOKENS"),
+])
+def test_provider_response_errors_keep_usage_in_service_fallback(monkeypatch, parts, finish):
+    monkeypatch.setattr("backend.llm_client.requests.post", Mock(return_value=envelope(parts, finish=finish)))
+    result = LLMService(client(), MockSystems()).run({
+        "request_id": "REQ-USAGE-001", "session_id": "SES-USAGE-001",
+        "actor": {"role": "employee", "actor_id": "EMP-001"},
+        "message": "Chuẩn bị TRIP-2026-001", "context": {}})
+    assert result["status"] == "awaiting_approval" and result["llm"]["status"] == "fallback"
+    assert result["llm"]["input_tokens"] == 18 and result["llm"]["output_tokens"] == 6
+    assert result["artifacts"][0]["delivery_status"] == "not_sent"
 
 
 @pytest.mark.parametrize("kwargs", [{"provider": "other"}, {"provider": "gemini"}, {"timeout": 0}, {"max_retries": 3}])

@@ -41,6 +41,7 @@ class LLMService:
             if direct:
                 result = finish(state, "completed", "GREETING", "Xin chào. Mình hỗ trợ chuyến công tác trên dữ liệu giả lập.")
                 return self._metadata(result, "skipped", calls=0)
+            generated = None
             try:
                 generated = self.client.rewrite(rewrite.group(1))
                 if not isinstance(generated.value, str) or not generated.value.strip() or len(generated.value) > 8000:
@@ -49,7 +50,7 @@ class LLMService:
                 return self._metadata(result, "ok", generated=generated)
             except LLMError as err:
                 result = finish(state, "needs_human", "LLM_UNAVAILABLE", "Chưa viết lại được nội dung; vui lòng thử lại.")
-                return self._metadata(result, "fallback", error=err)
+                return self._metadata(result, "fallback", generated=generated, error=err)
 
         result = run_agent(request, self.dispatcher, session=session)
         if result["status"] in {"rejected", "failed_validation"}:
@@ -70,13 +71,14 @@ class LLMService:
         except (LLMError, ValueError, TypeError) as err:
             if not isinstance(err, LLMError):
                 err = LLMError("invalid_presentation_plan", generated.retry_count if generated else 0)
-            return self._metadata(result, "fallback", error=err)
+            return self._metadata(result, "fallback", generated=generated, error=err)
 
     def _metadata(self, result, status, *, generated=None, error=None, calls=1, narrative=None):
+        usage = generated if generated is not None else error
         result["llm"] = {"status": status, "provider_model": self.client.model_id, "calls": calls,
                          "message": narrative or result["message"],
-                         "input_tokens": generated.input_tokens if generated else None,
-                         "output_tokens": generated.output_tokens if generated else None,
+                         "input_tokens": getattr(usage, "input_tokens", None),
+                         "output_tokens": getattr(usage, "output_tokens", None),
                          "retry_count": error.retry_count if error else generated.retry_count if generated else 0,
                          "error_code": error.code if error else None}
         if calls:

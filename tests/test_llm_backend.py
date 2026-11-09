@@ -65,6 +65,7 @@ def test_invalid_llm_plan_cannot_change_authoritative_result(value):
         assert result[field] == expected[field]
     assert result["llm"]["status"] == "fallback"
     assert result["llm"]["error_code"] == "invalid_presentation_plan"
+    assert result["llm"]["input_tokens"] == 20 and result["llm"]["output_tokens"] == 5
 
 
 def test_model_unavailable_preserves_created_draft_and_workflow_status():
@@ -73,6 +74,7 @@ def test_model_unavailable_preserves_created_draft_and_workflow_status():
     assert result["status"] == "awaiting_approval" and len(result["artifacts"]) == 1
     assert len(ms.drafts) == 1 and result["llm"]["status"] == "fallback"
     assert result["llm"]["retry_count"] == 1
+    assert result["llm"]["input_tokens"] is None and result["llm"]["output_tokens"] is None
     assert result["trace"][-1]["action"] == "terminal"
     assert result["trace"][-2]["observation_status"] == "fallback"
 
@@ -99,6 +101,12 @@ def test_rewrite_failure_does_not_report_completion():
     client = CountingClient(error=LLMError("llm_auth"))
     result = LLMService(client, MockSystems()).run(request("Viết lại: nội dung mẫu"))
     assert result["status"] == "needs_human" and result["llm"]["error_code"] == "llm_auth"
+
+
+def test_invalid_rewrite_preserves_usage_without_exposing_bad_output():
+    result = LLMService(CountingClient(value=" "), MockSystems()).run(request("Viết lại: nội dung mẫu"))
+    assert result["status"] == "needs_human" and result["llm"]["status"] == "fallback"
+    assert result["llm"]["input_tokens"] == 10 and result["llm"]["output_tokens"] == 8
 
 
 def test_greeting_is_direct_and_fake_rewrite_is_honestly_labelled():
