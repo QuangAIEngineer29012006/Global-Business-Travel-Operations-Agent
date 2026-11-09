@@ -1,130 +1,124 @@
-# Backend travel agent
+# Backend: phạm vi LLM
 
-Nhánh `backend` được tạo từ `huy`. Backend này gồm FastAPI, CLI, model adapter, tool registry/dispatcher,
-SQLite cho state/draft và ba workflow có kiểm soát. Đây là prototype đang phát triển;
-báo cáo evaluation đầy đủ và adapter tới dữ liệu của workflow gốc chưa hoàn tất.
+Backend này bổ sung lớp LLM lên code có sẵn của `huy`, theo request/response ở
+[contract 02](../agent-design/02-agent-contract.md) và cách phân công trong
+[workflow contract 06](../agent-design/06-workflows.md). Không triển khai RAG, database,
+session/auth, approval simulation hay workflow mới trong phần backend.
 
-## Quan hệ với code trên `huy`
+## Luồng tích hợp
 
-| Thành phần | Cách chạy / nguồn dữ liệu |
+```text
+request theo contract 02
+  -> src/workflows.run_agent(request, dispatcher)
+  -> workflow đọc fixture / tính toán / tạo draft bằng tool hiện có
+  -> LLM chọn và sắp xếp các điểm cần trình bày (tối đa 1 lượt)
+  -> response gốc + trường llm
+```
+
+`src/workflows.py`, `src/dev_systems.py`, `data/mock-systems/` và test workflow gốc được giữ nguyên.
+Vì vậy `TRIP-2026-001` vẫn pending; roles là `employee`, `travel_operations_reviewer`, `approver`;
+workflow là `pre_trip`, `in_trip`, `post_trip`; traveler ID dùng `EMP-*`.
+
+| File | Trách nhiệm |
 |---|---|
-| Workflow gốc `src/workflows.py`, `src/dev_systems.py` | Giữ nguyên; dùng `data/mock-systems/` và `demo.py` |
-| Backend mới `backend/`, `travel_agent/` | Dùng `data/training.json`, `data/policies.json`; sandbox ở `workspace/` |
-| Test gốc | Giữ nguyên `tests/test_workflows.py` |
-| Test backend | `tests/test_backend_workflows.py`, `test_safety.py`, `test_state_and_retries.py`, `test_api_and_gemini.py` |
+| `backend/config.py` | Provider, key, model, timeout, retry |
+| `backend/llm_client.py` | Gemini text/structured output/native function calling và simulator offline |
+| `backend/prompts.py` | Prompt trình bày, viết lại text và function calling |
+| `backend/models.py` | Schema request theo contract; validation kết quả trình bày |
+| `backend/service.py` | Gọi workflow chung, giới hạn model calls, fallback |
+| `backend/function_calling.py` | Adapter một lượt model proposal → dispatcher → function response |
+| `backend/main.py` | API `GET /api/health`, `POST /api/runs` |
 
-Hai bộ fixture có ID trùng nhưng nội dung khác. Ví dụ, `TRIP-2026-001` ở fixture gốc đang pending,
-còn trong fixture backend là approved. Không dùng kết quả từ backend để suy ra trạng thái của fixture gốc.
-Backend dùng role `reviewer`, workflow `expense`, traveler ID `TRV-*`; workflow gốc dùng
-`travel_operations_reviewer`, `post_trip`, `EMP-*`. Việc chuẩn hóa contract này còn cần làm khi tích hợp.
+## Cài đặt và chạy
 
-## Cài đặt
-
-Python 3.12 đã được dùng để kiểm thử. Tại thư mục gốc repo:
+Đã kiểm tra trên Python 3.12. Tại thư mục gốc:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt -r requirements-dev.txt
 cp .env.example .env
-```
-
-Trên Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-
-Mặc định `LLM_PROVIDER=fake`: simulator tạo function calls bằng quy tắc, không phải LLM.
-Chế độ này chạy offline, không cần API key và không đại diện cho chất lượng Gemini.
-
-## Chạy backend và demo
-
-```bash
+python scripts/demo_llm.py
 python -m uvicorn backend.main:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
-Mở tài liệu tương tác tại `http://127.0.0.1:8000/docs`.
+Windows PowerShell dùng `python -m venv .venv`, `.\.venv\Scripts\Activate.ps1` và
+`Copy-Item .env.example .env` thay cho các lệnh tương ứng. Mở `http://127.0.0.1:8000/docs` để thử API.
+`python demo.py` vẫn chạy workflow gốc như trên `huy`.
 
-CLI cho cả ba workflow và một số nhánh dừng an toàn:
+Mặc định `LLM_PROVIDER=fake`: chỉ mô phỏng offline, không có HTTP/model thật.
+Để dùng Gemini, đặt `LLM_PROVIDER=gemini`, điền `GEMINI_MODEL` hỗ trợ structured output và
+`GEMINI_API_KEY` trong `.env`. Không đưa `.env` lên Git. Không tự mặc định một model chưa xác minh khả dụng.
 
-```bash
-python -m travel_agent demo
-python -m travel_agent run "Chuẩn bị công tác TRIP-2026-001"
-python -m travel_agent run "TRIP-2026-002 bị delay"
-python -m travel_agent run "Rà soát chi phí EXP-2026-003"
-```
+## API đúng contract
 
-Demo ghi bằng chứng chạy cục bộ vào `artifacts/demo.json`. Không commit dữ liệu runtime này.
-Tổng và ngưỡng chi phí sử dụng integer minor units, tỷ lệ dùng basis points.
-
-## Gọi API
-
-Tạo session với một identity giả lập có sẵn, rồi truyền Bearer token:
+Không cần tạo session/token riêng cho bản training. Actor và session ID giả lập được truyền theo contract 02:
 
 ```python
 import requests
 
-base = "http://127.0.0.1:8000"
-session = requests.post(base + "/api/sessions", json={"user_id": "demo-an"}).json()
-headers = {"Authorization": "Bearer " + session["token"]}
-result = requests.post(base + "/api/runs", headers=headers, json={
-    "message": "Chuẩn bị công tác TRIP-2026-001",
-    "request_id": "example-request-001",
+result = requests.post("http://127.0.0.1:8000/api/runs", json={
+    "request_id": "REQ-2026-001",
+    "actor": {"role": "employee", "actor_id": "EMP-001"},
+    "session_id": "SES-001",
+    "message": "Tôi chuẩn bị công tác Singapore, đã đủ điều kiện chưa?",
+    "context": {"trip_id": "TRIP-2026-001"}
 }).json()
-print(result["state"]["outcome"])
-print(result["response"]["summary"])
+print(result["status"])          # awaiting_approval
+print(result["llm"]["message"]) # phần trình bày cho user
 ```
 
-Gửi lại cùng request ID, session và nội dung trả run cũ; nội dung khác với cùng key bị từ chối.
-Dùng request ID mới cho lần đọc trạng thái mới từ mock source.
+Response giữ nguyên các trường `request_id`, `run_id`, `workflow`, `status`, `message`, `data`, `evidence`,
+`artifacts`, `next_action`, `reason_code`, `steps`, `trace` của workflow. Trường bổ sung `llm` có
+`status` (`ok`, `fallback`, `skipped`), `message`, `calls`, token usage, retry count và error code.
 
-| Endpoint | Mục đích |
-|---|---|
-| `GET /api/health` | Trạng thái, provider và model |
-| `GET /api/training-users` | Identity/role mô phỏng có sẵn |
-| `POST /api/sessions` | Tạo session; đây không phải đăng nhập production |
-| `DELETE /api/sessions/current` | Thu hồi session |
-| `POST /api/runs` | Chạy workflow |
-| `GET /api/runs/{run_id}` | Xem run trong đúng session |
-| `GET /api/drafts/{draft_id}` | Xem draft trong đúng session |
-| `GET/PUT/DELETE /api/preferences` | Xem/lưu/xóa preference; lưu cần `remember: true` |
-| `POST /api/mock-approvals/{trip_id}` | Approver mô phỏng quyết định record đang pending |
-| `GET /api/tools` | Registry và JSON schemas |
+Giá trị `llm.calls=1` nghĩa một lượt gọi logic; transport có tối đa `LLM_MAX_RETRIES + 1` lần thử.
+Chế độ fake không gọi HTTP. Input sai/quyền không hợp lệ, greeting hoặc response không cần highlight có thể dùng 0 lượt.
 
-## Function calling và giới hạn
+## Vai trò thực tế của LLM
 
-Model chỉ đề xuất tool name/arguments. Dispatcher kiểm tra registry, workflow/phase allowlist,
-role, JSON Schema, scope của ID, budget và output schema. Workflow sở hữu dependency và điểm dừng.
-State tách `user_id`, `session_id`, `run_id`; session chỉ giữ ID đang hoạt động, không dùng làm nguồn facts.
-SQLite chỉ lưu token hash; mặc định không lưu full raw conversation.
+Workflow vẫn quyết định routing, trạng thái, phép tính, citation và draft. LLM nhận một danh sách câu
+đã được dựng từ kết quả workflow, trả JSON `highlight_ids` để lựa chọn/thứ tự trình bày. Backend chỉ
+render các câu đã xác minh; model không được thêm số tiền, đổi pending thành approved hay bịa citation.
+Đây là trình bày có ràng buộc, không phải một bộ viết narrative tự do hay kiểm tra entailment tổng quát.
+Nếu model lỗi hoặc trả ID ngoài danh sách, response giữ nguyên kết quả nghiệp vụ và đánh dấu `llm.status=fallback`.
 
-Draft tools có idempotency, luôn `not_sent`. Approval pending/rejected dừng trước draft write.
-Không có tool booking, payment, refund, gửi email, publish, arbitrary shell, URL hoặc SQL.
-Policy claims được trích nguyên câu từ corpus training đã kiểm tra; cơ chế này chưa phải bộ kiểm tra
-entailment tổng quát cho tài liệu bất kỳ. Không dùng corpus hư cấu này để tư vấn du lịch thực tế.
+Yêu cầu `Viết lại: ...` hoặc `Viết lại chuyên nghiệp: ...` gọi text generation một lần và không gọi tool/retrieval.
+Nó chỉ biên tập text người dùng cung cấp, không chứng thực trạng thái nghiệp vụ. Simulator ghi rõ chưa viết lại bằng LLM.
+Backend không lưu raw conversation, không tạo persistent memory riêng. Memory owner có thể truyền session dict vào
+`LLMService.run(request, session=...)`; API này không tự lưu context giữa các request.
 
-Nếu bật Gemini, tự điền `GEMINI_MODEL` hỗ trợ function calling và `GEMINI_API_KEY` vào `.env`,
-đổi `LLM_PROVIDER=gemini`. Adapter dùng native `functionCall` / `functionResponse`, giữ model content
-và thought signatures trong history tạm thời. Tham chiếu:
-[Gemini function calling](https://ai.google.dev/gemini-api/docs/function-calling).
-Chỉ transport giả lập được kiểm thử ở bản bàn giao này; chưa gọi Gemini thật.
+## Native function calling để nhóm tích hợp
 
-## Kiểm thử
+`GeminiClient.propose_tool()` gửi `functionDeclarations` và đọc native `functionCall`.
+`tool_turn()` chạy tối đa một proposal và một lời gọi dispatcher. Nó giới hạn tên tool, buộc arguments theo ID
+caller đã bind; dispatcher hiện có tiếp tục kiểm tra workflow/role/schema/domain. Function response và model content,
+kể cả thought signature, được giữ nguyên trong history tạm, không ghi log hoặc file mặc định.
+
+```bash
+python scripts/demo_llm.py --function-call
+```
+
+Lệnh cần Gemini đã cấu hình; chỉ đọc `TRIP-2026-001` qua `get_trip_request`, không ghi dữ liệu.
+Adapter không có vòng lặp tự trị hoặc write tools trong demo. Caller điều phối chịu trách nhiệm budget cho nhiều lượt.
+Tham chiếu chính thức: [Gemini function calling](https://ai.google.dev/gemini-api/docs/function-calling).
+
+Theo contract 06 hiện tại, API dùng workflow deterministic và **không gọi native function calling cho từng bước**.
+Việc nối model đề xuất mọi tool call theo mục 7 PDF là phần tích hợp toàn nhóm; backend không tuyên bố đã hoàn thành
+toàn bộ yêu cầu Agentic RAG hay function-calling orchestration của project. `search_travel_policy` hiện do dispatcher
+có sẵn của `huy` cung cấp; người phụ trách RAG có thể thay implementation qua dependency injection.
+
+## Kiểm thử và giới hạn
 
 ```bash
 python -m pytest -q
 ```
 
-Lệnh chạy cả test gốc và test backend. Bao gồm ba workflow, quyền truy cập, input/output validation,
-policy injection/conflict/no-evidence, budgets/retry, idempotency khi mất phản hồi sau commit,
-memory isolation, API và payload Gemini giả lập. Test đều dùng sandbox tạm.
+Test gồm workflow gốc, request mẫu contract, đúng fixture/role, giới hạn 0–1 lượt model, lỗi JSON/schema,
+fallback không đổi approval/số liệu/citation, text rewrite không retrieval, timeout/retry, function calling
+native qua HTTP mock, arguments bị cấm và thought signature round-trip.
 
-## Phần còn lại
-
-- Nối backend với logical schema và fixture của nhánh `huy`, thống nhất roles/workflow names/IDs.
-- Hoàn thiện test matrix, metrics, traces và báo cáo baseline/before-after/regression theo PDF.
-- Kiểm thử Gemini thật khi có model/key phù hợp và ghi rõ kết quả tách biệt với simulator.
+Chưa gọi Gemini thật vì chưa có model/key được cấu hình trong project. Kết quả offline không đo chất lượng Gemini.
+Auth/session, persistence/draft idempotency lâu dài, phê duyệt, evaluation toàn project và RAG thuộc lớp chung.
+Hành vi checklist pending của workflow gốc được giữ theo contract 06; nhóm cần thống nhất điểm này với câu chữ
+approval/write boundary ở PDF trước khi nghiệm thu toàn project.

@@ -4,12 +4,12 @@ Prototype học tập cho Agent hỗ trợ vận hành công tác quốc tế tr
 
 ## Backend trên nhánh `backend`
 
-Backend FastAPI, CLI và adapter Gemini function calling nằm trong `backend/` và `travel_agent/`.
+Backend FastAPI và adapter Gemini nằm trong `backend/`.
 Xem [hướng dẫn backend](docs/backend/README.md) để cài đặt, chạy demo và gọi API.
 
-Phần này được bổ sung từ nhánh `huy`. Workflow ở `src/`, fixture trong `data/mock-systems/`
-và bài test gốc `tests/test_workflows.py` được giữ nguyên. Backend hiện chạy bộ fixture riêng
-`data/training.json` và `data/policies.json`; chưa nối adapter với bộ fixture của workflow gốc.
+Backend dùng trực tiếp workflow ở `src/workflows.py` và dispatcher/fixture của `huy`.
+Phần LLM chỉ hỗ trợ trình bày kết quả; không có dataset, database, workflow hoặc RAG thứ hai.
+Native function calling được cung cấp dưới dạng adapter một lượt, có thể nối với dispatcher của nhóm.
 
 ## Cấu trúc
 
