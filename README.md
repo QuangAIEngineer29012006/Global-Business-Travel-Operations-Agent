@@ -21,7 +21,7 @@ Xem [cách chạy frontend](frontend/README.md). Frontend không bổ sung RAG m
 
 - `docs/agent-design/`: tài liệu kiến trúc và contract.
 - `data/mock-systems/`: fixture giả lập CSV, JSON và Markdown; nội dung dữ liệu bằng tiếng Việt, schema/ID/enum giữ tiếng Anh.
-- `scripts/preprocess_to_sqlite.py`: kiểm tra, chuẩn hóa và nạp fixture vào SQLite bằng Python standard library.
+- `scripts/preprocess_to_sqlite.py`: kiểm tra fixture, nạp dữ liệu và tạo hybrid policy index trong SQLite.
 - `data/processed/`: database và báo cáo validation được sinh; database không đưa vào Git.
 
 ## Tạo database cục bộ
@@ -29,10 +29,17 @@ Xem [cách chạy frontend](frontend/README.md). Frontend không bổ sung RAG m
 Từ thư mục gốc dự án:
 
 ```powershell
+pip install -r requirements.txt
 python scripts/preprocess_to_sqlite.py
 ```
 
 Có thể truyền đường dẫn riêng bằng `--source data/mock-systems --output data/processed/travel_agent.sqlite`. Script không sửa fixture nguồn; lỗi đọc/validation được ghi vào `data/processed/validation_report.json`.
+
+Preprocessing builds a SQLite FTS5 index and semantic embeddings for policy chunks.
+Hybrid search uses `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`;
+its first use downloads and caches the model. Set `POLICY_EMBEDDING_MODEL` to
+select another compatible local model. To run without semantic embeddings, set
+`POLICY_SEMANTIC_MODE=keyword` for keyword-only indexing and retrieval.
 
 ## An toàn dữ liệu
 

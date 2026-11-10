@@ -1,12 +1,15 @@
-"""Validate and load mock travel operations fixtures into SQLite.
+"""Validate, index, and load mock travel operations fixtures into SQLite.
 
 Usage: python scripts/preprocess_to_sqlite.py [--source data/mock-systems] [--output data/processed/travel_agent.sqlite]
-Only Python standard library is required. Source fixtures are read-only; invalid records are reported and skipped.
+Source fixtures are read-only; invalid records are reported and skipped.
 """
 from __future__ import annotations
 import argparse, csv, json, re, sqlite3, sys
 from datetime import date, datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from policy_search import PolicySearchIndex
 
 
 def parse_args():
@@ -140,6 +143,7 @@ def main():
         d=json.loads(draft_path.read_text(encoding='utf-8-sig')); drafts=d.get('drafts',[])
         if not isinstance(drafts,list): raise ValueError('drafts must be an array')
     except (OSError,json.JSONDecodeError,ValueError) as e: problem(errors,draft_path,None,'INVALID_DRAFT_STORE',str(e))
+    policy_index = PolicySearchIndex(chunks)
     # Foreign-key checked transaction. Rebuild output atomically from current fixtures.
     temp=out.with_suffix('.tmp.sqlite')
     if temp.exists(): temp.unlink()
@@ -155,6 +159,7 @@ def main():
             insert_many(conn,'approvals',['approval_id','trip_id','report_id','request_type','status','action_summary','created_at'],valid_approvals)
             insert_many(conn,'policy_documents',['doc_id','source','version','effective_from','effective_to','category','file_path'],docs)
             insert_many(conn,'policy_chunks',['chunk_id','doc_id','source','section','page','version','category','text'],chunks)
+            policy_index.persist_to(conn)
             for d in drafts:
                 if not isinstance(d,dict) or not d.get('draft_id'):
                     problem(errors,draft_path,None,'INVALID_DRAFT','draft record missing draft_id'); continue
