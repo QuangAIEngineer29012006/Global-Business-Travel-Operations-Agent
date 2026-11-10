@@ -13,11 +13,15 @@ from __future__ import annotations
 import csv
 import json
 import re
-import unicodedata
 from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
 from typing import Callable, Optional
+
+if __package__:
+    from .policy_search import PolicyIndexUnavailable, PolicySearchIndex
+else:
+    from policy_search import PolicyIndexUnavailable, PolicySearchIndex
 
 DEFAULT_DATA = Path(__file__).resolve().parents[1] / "data" / "mock-systems"
 TRIP_ID = r"^TRIP-\d{4}-\d{3}$"
@@ -93,7 +97,8 @@ PRE, INT, POST = "pre_trip", "in_trip", "post_trip"
 class MockSystems:
     def __init__(self, data_dir: Optional[Path] = None, *, extra_chunks: Optional[list] = None,
                  faults: Optional[dict] = None, always_fail: Optional[set] = None,
-                 mutate: Optional[Callable] = None):
+                 mutate: Optional[Callable] = None, policy_encoder=None,
+                 policy_semantic_mode: Optional[str] = None):
         d = Path(data_dir or DEFAULT_DATA)
         self.trips = {r["trip_id"]: r for r in self._csv(d / "travel-requests/travel_requests.csv")}
         self.profiles = {r["traveler_id"]: r for r in json.loads((d / "traveler-profiles/traveler_profiles.json").read_text("utf-8"))}
@@ -107,6 +112,9 @@ class MockSystems:
         self.always_fail = set(always_fail or ())
         if mutate:
             mutate(self)
+        self.policy_index = PolicySearchIndex(
+            self.chunks, encoder=policy_encoder, semantic_mode=policy_semantic_mode
+        )
         self.registry = {
             "get_trip_request": ({PRE, INT}, ALL_ROLES, S_TRIP, self.get_trip_request),
             "get_traveler_profile": ({PRE}, ALL_ROLES, S_TRAVELER, self.get_traveler_profile),
@@ -244,22 +252,12 @@ class MockSystems:
                    "mock_expense_system")
 
     # ---------------------------------------------------------------- policy search
-    @staticmethod
-    def _tokens(s: str) -> set:
-        s = unicodedata.normalize("NFC", s.lower())
-        return {t for t in re.findall(r"\w+", s) if len(t) >= 3}
-
     def search_travel_policy(self, args, ctx=None):
-        q = self._tokens(args["query"])
-        scored = []
-        for c in self.chunks:
-            if c["category"] != args["category"]:
-                continue
-            score = len(q & self._tokens(c["section"] + " " + c["text"]))
-            if score > 0:
-                scored.append((score, c))
-        scored.sort(key=lambda x: (-x[0], x[1]["chunk_id"]))
-        res = [dict(c, score=s) for s, c in scored[: args["max_results"]]]
+        self.policy_index.chunks = self.chunks
+        try:
+            res = self.policy_index.search(args["query"], args["category"], args["max_results"])
+        except PolicyIndexUnavailable as exc:
+            return _err("TOOL_UNAVAILABLE", str(exc))
         return _ok({"results": res}, "mock_policy_knowledge_base")
 
     # ---------------------------------------------------------------- draft tools (idempotent)
