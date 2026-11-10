@@ -10,27 +10,28 @@ Xây dựng prototype có thể hỗ trợ người đi công tác và Travel Op
 - **Tool-mediated access:** Agent không đọc trực tiếp database, file, network hay shell. Mọi truy cập nghiệp vụ qua tool registry và dispatcher.
 - **Policy is evidence, not authority:** policy có thể hỗ trợ giải thích/đề xuất; policy không cấp quyền để đặt dịch vụ, thanh toán, gửi thông tin hoặc ghi dữ liệu nghiệp vụ.
 - **Deterministic controls:** schema validation, quyền, ngân sách, tính tổng expense và trạng thái approval được kiểm tra bằng code.
-- **Draft-only side effects:** thao tác giống ghi chỉ được tạo artifact/approval record trong sandbox; không publish hoặc gửi thật.
+- **Draft-only side effects:** thao tác giống ghi chỉ được tạo artifact/approval record trong sandbox; drafts và approval simulations được lưu bền vững trong SQLite local; không publish hoặc gửi thật. Approval tool chỉ tạo `pending`.
 - **Observable execution:** mỗi run ghi trace an toàn đủ để hiểu tool nào chạy, quan sát được gì và vì sao dừng.
 
 ## 3. Thành phần logic
 
-1. **Request interface** — nhận message, actor role và session context.
-2. **Request normalizer** — trích workflow intent và candidate IDs; không tự bịa ID hoặc field còn thiếu.
-3. **Orchestrator** — chọn workflow, theo dõi phase/steps và quyết định bước tiếp dựa trên tool observations.
-4. **Policy/evidence service** — tìm policy chunks và trả metadata nguồn; không tự nâng mức độ chắc chắn của evidence.
-5. **Tool registry** — khai báo tool, schema, permission class và workflow allowlist.
-6. **Dispatcher/guard** — xác thực schema, ID/domain, quyền, allowlist, budget trước khi gọi implementation.
-7. **Mock domain adapters** — giao diện tới Trip, Traveler, Itinerary, Approval, Expense và Policy stores.
-8. **Draft workspace** — lưu artifacts giả lập với idempotency và lineage.
-9. **Run/session state store** — state ngắn hạn, preference tối thiểu và trace; không là nguồn sự thật của hồ sơ nghiệp vụ.
-10. **Response composer** — tạo câu trả lời grounded, nêu rõ trạng thái và handoff cần thiết.
+1. **Request interface** — nhận message, actor role, session ID và context; actor ID trong prototype chỉ là định danh giả lập, không phải xác thực.
+2. **State/memory service** — nạp context ngắn hạn theo cặp actor/session; cung cấp thao tác preferences rõ ràng, chỉ ghi khi người dùng yêu cầu.
+3. **Request normalizer** — trích workflow intent và candidate IDs; không tự bịa ID hoặc field còn thiếu.
+4. **Orchestrator** — chọn workflow, theo dõi phase/steps và quyết định bước tiếp dựa trên tool observations.
+5. **Policy/evidence service** — tìm policy chunks và trả metadata nguồn; không tự nâng mức độ chắc chắn của evidence.
+6. **Tool registry** — khai báo tool, schema, permission class và workflow allowlist.
+7. **Dispatcher/guard** — xác thực schema, ID/domain, quyền, allowlist, budget trước khi gọi implementation.
+8. **Mock domain adapters** — giao diện tới Trip, Traveler, Itinerary, Approval, Expense và Policy stores.
+9. **Draft workspace** — lưu artifacts giả lập với idempotency và lineage.
+10. **Run/session/preference store** — lưu run summary và trace an toàn, context session tối thiểu, preference allowlist; không là nguồn sự thật nghiệp vụ.
+11. **Response composer** — tạo câu trả lời grounded, nêu rõ trạng thái và handoff cần thiết.
 
 Đây là các ranh giới logic; có thể nằm cùng một process trong prototype.
 
 ## 4. Luồng điều khiển chuẩn
 
-`User request → normalize → select workflow → validate required context → orchestrator proposes tool call → dispatcher checks → mock adapter executes → structured observation → update run state/trace → continue, ask, handoff, or finish → compose response`
+`User request → load actor/session context → normalize → select workflow → validate required context → orchestrator proposes tool call → dispatcher checks → mock adapter executes → structured observation → update run trace → continue, ask, handoff, or finish → persist run summary/session context → compose response`
 
 Model chỉ được đề xuất tên tool và arguments theo contract. Dispatcher là nơi thực thi kiểm soát. Tool output là observation về nguồn giả lập, không phải chỉ dẫn hệ thống.
 
@@ -44,8 +45,16 @@ Model chỉ được đề xuất tên tool và arguments theo contract. Dispatc
 | Tiến trình hiện tại | Run state cho một execution |
 | Ngữ cảnh hội thoại gần | Session state, chỉ dùng trong session đó |
 | Preference bền vững | Preference store tối thiểu, chỉ khi người dùng yêu cầu lưu |
+| Run summary và trace | Run store; lưu execution metadata đã lọc, không lưu raw message hoặc toàn bộ business payload |
 
 Không dùng session summary hoặc persistent memory để thay thế trạng thái nghiệp vụ mới nhất.
+
+### 5.1. Phạm vi lưu trữ state
+
+- `run_id` là định danh riêng cho mỗi execution; run store giữ workflow, terminal phase/status, số bước, reason code, thời điểm hoàn tất, artifact/evidence IDs và safe trace.
+- Session context được khóa theo `(actor_id, session_id)`. Prototype hiện chỉ lưu `active_trip_id`; mọi trạng thái trip, approval, itinerary và expense vẫn phải đọc lại từ mock system ở mỗi run.
+- Preferences được khóa theo actor giả lập, chỉ nhận các key allowlist như `response_language` và `preferred_output_format`. Chỉ ghi qua thao tác lưu rõ ràng; mặc định không ghi preference.
+- SQLite là storage cục bộ cho prototype, không cung cấp xác thực người dùng hoặc đồng bộ nhiều máy. API preference chỉ phù hợp dữ liệu giả lập; không dùng cho PII hoặc triển khai production.
 
 ## 6. Ranh giới tin cậy
 
@@ -67,7 +76,8 @@ Không dùng session summary hoặc persistent memory để thay thế trạng t
 ```mermaid
 flowchart TD
   U[User / Reviewer] --> I[Request Interface]
-  I --> O[Orchestrator + Workflow]
+  I --> M[State and Memory Service]
+  M --> O[Orchestrator + Workflow]
   O --> D[Dispatcher / Guard]
   D --> R[Tool Registry + Allowlist]
   D --> A[Mock Domain Adapters]
@@ -75,7 +85,7 @@ flowchart TD
   D --> P[Policy Retrieval]
   P --> K[Versioned Policy Corpus]
   D --> W[Draft Workspace]
-  O <--> S[Run and Session State]
+  O <--> S[Run, Session and Preference Store]
   O --> L[Safe Trace]
   O --> C[Response Composer]
   C --> U

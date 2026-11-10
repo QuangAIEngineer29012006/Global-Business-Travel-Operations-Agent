@@ -4,7 +4,7 @@ Prototype học tập cho Agent hỗ trợ vận hành công tác quốc tế tr
 
 ## Backend trên nhánh `backend`
 
-Backend FastAPI và adapter Gemini nằm trong `backend/`.
+Backend FastAPI, adapter Gemini và SQLite-backed sandbox stores nằm trong `backend/`.
 Xem [hướng dẫn backend](docs/backend/README.md) để cài đặt, chạy demo và gọi API.
 
 Backend dùng trực tiếp workflow ở `src/workflows.py` và dispatcher/fixture của `huy`.
@@ -22,7 +22,8 @@ Xem [cách chạy frontend](frontend/README.md). Frontend không bổ sung RAG m
 - `docs/agent-design/`: tài liệu kiến trúc và contract.
 - `data/mock-systems/`: fixture giả lập CSV, JSON và Markdown; nội dung dữ liệu bằng tiếng Việt, schema/ID/enum giữ tiếng Anh.
 - `scripts/preprocess_to_sqlite.py`: kiểm tra fixture, nạp dữ liệu và tạo hybrid policy index trong SQLite.
-- `data/processed/`: database và báo cáo validation được sinh; database không đưa vào Git.
+- `data/processed/`: database và báo cáo validation được sinh; database không đưa vào Git. API runtime dùng `agent_state.sqlite` để lưu run/session state, draft workspace và approval simulation.
+- Backend lưu run summary, session context và preference opt-in trong `data/processed/agent_state.sqlite` mặc định; đổi vị trí bằng `AGENT_STATE_DB`.
 
 ## Tạo database cục bộ
 

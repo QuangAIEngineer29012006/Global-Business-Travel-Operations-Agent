@@ -23,8 +23,8 @@ Registry là nguồn duy nhất các tool có thể gọi. Không sinh tool name
 
 - `read_only`: chỉ đọc mock source.
 - `deterministic`: validation hoặc calculation thuần xác định.
-- `draft_only`: tạo artifact trong sandbox; cần idempotency key.
-- `approval_simulation`: tạo/cập nhật record approval giả lập; không thực hiện downstream action.
+- `draft_only`: tạo artifact trong sandbox; cần idempotency key; runtime API lưu bền vững trong SQLite local.
+- `approval_simulation`: chỉ tạo record approval giả lập `pending`; không có thao tác approve/reject và không thực hiện downstream action.
 
 Mỗi workflow có allowlist riêng. Tool nằm trong registry nhưng không nằm trong workflow allowlist vẫn phải bị từ chối.
 
@@ -55,7 +55,7 @@ Tên cuối cùng cần được các owner thống nhất trước implementati
 | `search_travel_policy(query, category, max_results)` | read_only | Trả chunks cùng metadata nguồn |
 | `get_expense_report(report_id)` | read_only | Expense facts/line items |
 | `calculate_expense_summary(report_id)` | deterministic | Tính tổng, kiểm tra ngưỡng có cấu hình |
-| `request_approval(action_summary, idempotency_key)` | approval_simulation | Chỉ tạo record `pending` giả lập |
+| `request_approval(trip_id, action_summary, idempotency_key)` | approval_simulation | Chỉ tạo record `pending` khi user yêu cầu rõ; employee/reviewer, scope trip và schema được kiểm tra |
 | `create_*_draft(payload, source_ids, idempotency_key)` | draft_only | Tên cụ thể và schema do draft owner chốt |
 
 Không đưa arbitrary URL, path, SQL, shell command hoặc code vào arguments.
@@ -93,6 +93,10 @@ Error:
 - Retry giới hạn cho lỗi có `retryable=true`; không retry validation, unauthorized hay not found.
 - Retrieval có `max_results` và giới hạn số lần gọi.
 - Draft/approval writes dùng idempotency key ổn định theo request/workflow/intent; retry trả lại artifact record hiện có thay vì tạo duplicate.
+- Idempotency của draft/approval được scope theo actor giả lập; khóa trùng giữa hai actor không làm lộ hoặc trả lại artifact/approval của nhau.
+- API runtime lưu draft và approval simulation trong SQLite cục bộ qua StateStore; fixture-only `MockSystems` vẫn hỗ trợ storage trong memory để test cô lập.
+- `request_approval` chỉ được gọi khi caller đánh dấu explicit user intent và bind toàn bộ arguments; native function caller không được tự viết `trip_id`, action summary hoặc idempotency key.
+- API `POST /api/approval-requests` là explicit caller path cho tool; endpoint không suy ra approval intent từ nội dung chat.
 - Giới hạn đạt ngưỡng thì dừng với `partial`/`needs_human` và reason code.
 
 ## 7. Trace requirements

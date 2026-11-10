@@ -2,8 +2,9 @@
 
 Backend này bổ sung lớp LLM lên code có sẵn của `huy`, theo request/response ở
 [contract 02](../agent-design/02-agent-contract.md) và cách phân công trong
-[workflow contract 06](../agent-design/06-workflows.md). Không triển khai RAG, database,
-session/auth, approval simulation hay workflow mới trong phần backend.
+[workflow contract 06](../agent-design/06-workflows.md). Không triển khai RAG, business database,
+authentication hay workflow mới trong phần backend. API runtime dùng SQLite local cho run/session state,
+draft workspace và pending-only approval simulation.
 
 ## Luồng tích hợp
 
@@ -15,7 +16,8 @@ request theo contract 02
   -> response gốc + trường llm
 ```
 
-`src/workflows.py`, `src/dev_systems.py`, `data/mock-systems/` và test workflow gốc được giữ nguyên.
+Workflow nghiệp vụ hiện có và fixture trong `data/mock-systems/` vẫn là nguồn logic/dữ liệu chung;
+dispatcher đã được mở rộng để lưu draft/approval simulations qua StateStore khi API runtime dùng mặc định.
 Vì vậy `TRIP-2026-001` vẫn pending; roles là `employee`, `travel_operations_reviewer`, `approver`;
 workflow là `pre_trip`, `in_trip`, `post_trip`; traveler ID dùng `EMP-*`.
 
@@ -75,6 +77,50 @@ Response giữ nguyên các trường `request_id`, `run_id`, `workflow`, `statu
 Giá trị `llm.calls=1` nghĩa một lượt gọi logic; transport có tối đa `LLM_MAX_RETRIES + 1` lần thử.
 Chế độ fake không gọi HTTP. Input sai/quyền không hợp lệ, greeting hoặc response không cần highlight có thể dùng 0 lượt.
 
+### Run state, session context và preferences
+
+API ghi summary cho mỗi run vào SQLite local, mặc định tại `data/processed/agent_state.sqlite`;
+có thể đổi bằng `AGENT_STATE_DB`. Run store chỉ giữ metadata execution, artifact/evidence IDs và safe trace;
+không giữ message gốc hoặc toàn bộ business response.
+Draft workspace và các approval simulation cũng dùng SQLite này; draft idempotency key được scope theo actor, còn approval record do tool tạo luôn giữ `pending`.
+Trace có `observation_summary` với success/error code, source system và danh sách tên field; giá trị tool data không được sao chép vào summary.
+
+Session context được nạp theo cặp `(actor_id, session_id)` và hiện chỉ giữ `active_trip_id`.
+ID đó giúp định tuyến follow-up thiếu ID; trip facts và approval status vẫn được đọc lại từ mock tools.
+Session mới hoặc actor khác không thừa hưởng context này.
+
+Preferences không được suy ra hoặc lưu tự động từ hội thoại. Người dùng phải gọi thao tác lưu rõ ràng;
+chỉ hỗ trợ `response_language` (`vi`, `en`, `vi-VN`, `en-US`) và
+`preferred_output_format` (`plain_text`, `markdown`, `checklist`, `concise`, `detailed`).
+Các endpoint training là:
+
+```text
+GET    /api/preferences/{actor_id}                 # xem
+PUT    /api/preferences/{actor_id}                 # lưu/cập nhật; body: {"key":"response_language","value":"vi"}
+DELETE /api/preferences/{actor_id}?key=response_language  # xóa một key
+DELETE /api/preferences/{actor_id}                 # xóa mọi preference của actor
+```
+
+Actor ID vẫn là synthetic fixture identity, không phải authentication. Endpoints này chỉ dùng local
+training data, không dùng PII. SQLite state path được bỏ qua bởi Git.
+
+Approval simulation chỉ chạy theo yêu cầu rõ ràng qua `POST /api/approval-requests` với `request_id`,
+`actor`, `session_id`, `trip_id`, `action_summary` và `idempotency_key`. Endpoint luôn tạo tối đa record
+`pending`; không có API để tự approve/reject. Tool dispatcher kiểm tra actor scope và khóa idempotency.
+
+Ví dụ:
+
+```json
+{
+  "request_id": "REQ-2026-010",
+  "actor": {"role": "employee", "actor_id": "EMP-001"},
+  "session_id": "SES-001",
+  "trip_id": "TRIP-2026-001",
+  "action_summary": "Rà soát checklist chuyến công tác",
+  "idempotency_key": "REQ-2026-010:approval:TRIP-2026-001"
+}
+```
+
 ## Vai trò thực tế của LLM
 
 Workflow vẫn quyết định routing, trạng thái, phép tính, citation và draft. LLM nhận một danh sách câu
@@ -86,14 +132,15 @@ Fallback giữ token usage mà provider đã trả, ngay cả khi JSON/plan khô
 
 Yêu cầu `Viết lại: ...` hoặc `Viết lại chuyên nghiệp: ...` gọi text generation một lần và không gọi tool/retrieval.
 Nó chỉ biên tập text người dùng cung cấp, không chứng thực trạng thái nghiệp vụ. Simulator ghi rõ chưa viết lại bằng LLM.
-Backend không lưu raw conversation, không tạo persistent memory riêng. Memory owner có thể truyền session dict vào
-`LLMService.run(request, session=...)`; API này không tự lưu context giữa các request.
+Backend không lưu raw conversation. Session context, run summary và preference được lưu riêng trong
+`backend/state_store.py`; session có thể được inject qua `LLMService.run(request, session=...)` khi chạy unit/integration
+harness. API nạp và lưu session tự động theo actor/session scope.
 
 ## Native function calling để nhóm tích hợp
 
-`GeminiClient.propose_tool()` gửi `functionDeclarations` và đọc native `functionCall`.
-`tool_turn()` chạy tối đa một proposal và một lời gọi dispatcher. Nó giới hạn tên tool, buộc arguments theo ID
-caller đã bind; dispatcher hiện có tiếp tục kiểm tra workflow/role/schema/domain. Function response và model content,
+`GeminiClient.propose_tool()` gửi `functionDeclarations` cho ba read tools và công cụ `request_approval` rồi đọc native `functionCall`.
+`tool_turn()` chạy tối đa một proposal và một lời gọi dispatcher. Nó giới hạn tên tool, buộc arguments theo caller đã bind;
+với `request_approval`, caller còn phải đánh dấu yêu cầu rõ ràng và bind toàn bộ arguments. Dispatcher tiếp tục kiểm tra workflow/role/schema/domain. Function response và model content,
 kể cả thought signature, được giữ nguyên trong history tạm, không ghi log hoặc file mặc định.
 Trước khi trả observation cho model, adapter kiểm tra success có `data`/metadata nguồn và error có
 `code`, `message`, `retryable`; envelope thiếu trường hoặc có đồng thời success/error bị từ chối.
@@ -102,8 +149,7 @@ Trước khi trả observation cho model, adapter kiểm tra success có `data`/
 python scripts/demo_llm.py --function-call
 ```
 
-Lệnh cần Gemini đã cấu hình; chỉ đọc `TRIP-2026-001` qua `get_trip_request`, không ghi dữ liệu.
-Adapter không có vòng lặp tự trị hoặc write tools trong demo. Caller điều phối chịu trách nhiệm budget cho nhiều lượt.
+Lệnh cần Gemini đã cấu hình. Mặc định chỉ đọc `TRIP-2026-001`; thêm `--approval-request` để chủ động tạo một record `pending` trong mock approval store. Adapter không có vòng lặp tự trị hoặc retry write; caller điều phối chịu trách nhiệm budget cho nhiều lượt. `MockSystems()` trong demo mặc định cô lập với memory store; API runtime mới dùng SQLite persistence.
 Tham chiếu chính thức: [Gemini function calling](https://ai.google.dev/gemini-api/docs/function-calling).
 
 Theo contract 06 hiện tại, API dùng workflow deterministic và **không gọi native function calling cho từng bước**.

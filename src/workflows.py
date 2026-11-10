@@ -48,7 +48,7 @@ EXPENSE_ITEM_REQUIRED = ("item_id", "category", "amount", "date", "receipt_prese
 CHUNK_REQUIRED_META = ("chunk_id", "doc_id", "source", "section", "version", "category", "text")
 
 PRE_TRIP_TOOLS = frozenset({"get_trip_request", "get_approval_status", "search_travel_policy",
-                            "create_travel_checklist_draft"})
+                            "create_travel_checklist_draft", "request_approval"})
 IN_TRIP_TOOLS = frozenset({"get_itinerary", "search_travel_policy",
                            "create_escalation_or_support_draft"})
 POST_TRIP_TOOLS = frozenset({"get_expense_report", "calculate_expense_summary",
@@ -87,7 +87,7 @@ class BudgetExceeded(Exception):
 def _safe(args: Optional[dict]) -> dict:
     out: dict[str, Any] = {}
     for k, v in (args or {}).items():
-        if _SENSITIVE_KEY_RE.search(k):
+        if _SENSITIVE_KEY_RE.search(k) or k in {"action_summary", "payload"}:
             out[k] = "[redacted]"
         elif isinstance(v, str):
             out[k] = v[:80]
@@ -118,12 +118,14 @@ class RunState:
     outcome: Optional[str] = None
 
     def log(self, action: str, args: Optional[dict] = None, status: str = "ok",
-            transition: Optional[str] = None, retry: int = 0) -> None:
+            transition: Optional[str] = None, retry: int = 0,
+            observation_summary: Optional[dict] = None) -> None:
         n = len(self.trace) + 1
         self.trace.append({
             "trace_id": f"{self.run_id}:{n}", "case_id": self.case_id, "run_id": self.run_id,
             "step": self.step_count, "workflow": self.workflow, "phase": self.phase,
             "action": action, "safe_args": _safe(args), "observation_status": status,
+            "observation_summary": observation_summary or {},
             "retry_count": retry, "transition": transition,
             "budget": {"steps": f"{self.step_count}/{self.max_steps}",
                        "retrieval": f"{self.retrieval_calls}/{self.max_retrieval}"},
@@ -140,6 +142,21 @@ class Executor:
     def _ctx(self) -> dict:
         s = self.state
         return {"workflow": s.workflow, "actor": s.actor, "run_id": s.run_id, "request_id": s.request_id}
+
+    @staticmethod
+    def _observation_summary(result: dict) -> dict:
+        """Keep audit metadata without copying business values or raw tool output into traces."""
+        if result.get("ok") is True:
+            data = result.get("data") if isinstance(result.get("data"), dict) else {}
+            meta = result.get("meta") if isinstance(result.get("meta"), dict) else {}
+            summary = {"ok": True, "data_fields": sorted(data)[:30]}
+            source = meta.get("source_system")
+            if isinstance(source, str):
+                summary["source_system"] = source[:80]
+            return summary
+        error = result.get("error") if isinstance(result.get("error"), dict) else {}
+        code = error.get("code")
+        return {"ok": False, "error_code": code[:60] if isinstance(code, str) else "INTERNAL_ERROR"}
 
     def call(self, tool: str, args: dict, phase: str) -> dict:
         st = self.state
@@ -160,16 +177,17 @@ class Executor:
                 st.retrieval_calls += 1
             st.step_count += 1
             res = self.dispatcher(tool, args, self._ctx())
+            observation = self._observation_summary(res)
             if res.get("ok"):
-                st.log(tool, args, "ok", "next", attempt)
+                st.log(tool, args, "ok", "next", attempt, observation)
                 return res
             err = res.get("error", {})
             code = err.get("code", "INTERNAL_ERROR")
             if err.get("retryable") and attempt < st.max_retries:
                 attempt += 1
-                st.log(tool, args, f"error:{code}", f"retry {attempt}/{st.max_retries}", attempt)
+                st.log(tool, args, f"error:{code}", f"retry {attempt}/{st.max_retries}", attempt, observation)
                 continue
-            st.log(tool, args, f"error:{code}", "no_retry", attempt)
+            st.log(tool, args, f"error:{code}", "no_retry", attempt, observation)
             return res
 
 

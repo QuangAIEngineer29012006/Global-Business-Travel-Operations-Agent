@@ -11,13 +11,16 @@ Workflow là orchestration deterministic; LLM (nếu dùng) chỉ viết lại n
 | Input | request envelope (02 §2); ID lấy từ `context`, fallback từ message, `trip_id` fallback từ session (chỉ khi message có từ khóa liên quan) |
 | Router | text user chỉ chọn workflow + ID, không chọn tool. Có `EXP`/`RPT` hoặc từ khóa chi phí → `post_trip`; từ khóa delay/hủy → `in_trip`; còn lại → `pre_trip` |
 | Budget | `max_steps=12`, `max_retries=2` (chỉ lỗi `retryable`), `max_retrieval=6`, rewrite query ≤ 1 lần/branch |
-| Draft | `create_*_draft(payload, source_ids, idempotency_key)`; key = `{request_id}:{workflow}:{id}:{intent}` |
+| Draft | `create_*_draft(payload, source_ids, idempotency_key)`; key = `{request_id}:{workflow}:{id}:{intent}`, storage bền vững ở API runtime và scope theo actor |
+| Approval request | `request_approval(trip_id, action_summary, idempotency_key)` chỉ khi user yêu cầu rõ; tạo `pending`, không approve/reject |
 
 ## 2. Tool sequence và terminal outcomes
 
-**pre_trip** — allowlist: `get_trip_request`, `get_approval_status`, `search_travel_policy`, `create_travel_checklist_draft`
+**pre_trip** — allowlist: `get_trip_request`, `get_approval_status`, `search_travel_policy`, `create_travel_checklist_draft`, `request_approval` (explicit request only)
 
 `get_trip_request → (kiểm travel_status, required_fields) → get_approval_status → search ×3–4 (travel, visa, insurance, approval nếu chưa approved) → create_travel_checklist_draft`
+
+`request_approval` là tool mô phỏng tùy chọn cho yêu cầu rõ ràng của user; workflow checklist không tự gọi tool này. Caller phải bind đủ `trip_id`, `action_summary`, `idempotency_key`; dispatcher xác minh actor scope và chỉ ghi trạng thái `pending`. REST caller dùng `POST /api/approval-requests`.
 
 | Điều kiện | status / reason_code |
 |---|---|

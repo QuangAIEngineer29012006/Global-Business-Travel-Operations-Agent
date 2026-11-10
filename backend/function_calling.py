@@ -3,10 +3,11 @@ from .prompts import TOOL_PROMPT
 
 
 def read_tool_declarations(registry):
-    """Expose only the three entry reads; schemas come from the existing dispatcher registry."""
+    """Expose entry reads and the explicitly requested pending-only approval simulation."""
     descriptions = {"get_trip_request": "Read one synthetic travel request.",
                     "get_itinerary": "Read one synthetic itinerary and disruption status.",
-                    "get_expense_report": "Read one synthetic expense report."}
+                    "get_expense_report": "Read one synthetic expense report.",
+                    "request_approval": "Create a pending-only approval simulation when explicitly requested by the user."}
     return [{"name": name, "description": description, "parametersJsonSchema": registry[name][2]}
             for name, description in descriptions.items() if name in registry]
 
@@ -25,6 +26,11 @@ def tool_turn(client, contents, declarations, allowed_names, dispatcher, context
     bindings = context.get("bound_arguments", {})
     if not bindings or any(call["args"].get(key) != value for key, value in bindings.items()):
         raise LLMError("unbound_function_arguments", proposal.retry_count, result=proposal)
+    if call["name"] == "request_approval":
+        if context.get("explicit_approval_request") is not True:
+            raise LLMError("approval_request_not_explicit", proposal.retry_count, result=proposal)
+        if set(call["args"]) != set(bindings):
+            raise LLMError("unbound_function_arguments", proposal.retry_count, result=proposal)
     ctx = {key: value for key, value in context.items() if key != "bound_arguments"}
     observation = dispatcher(call["name"], call["args"], ctx)
     if not isinstance(observation, dict) or type(observation.get("ok")) is not bool:

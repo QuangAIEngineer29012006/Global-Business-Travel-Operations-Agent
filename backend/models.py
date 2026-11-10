@@ -29,5 +29,22 @@ class AgentRequest(StrictModel):
     context: Context = Field(default_factory=Context)
 
 
+class PreferenceUpdate(StrictModel):
+    key: Literal["response_language", "preferred_output_format"]
+    value: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
+
+
+class ApprovalRequest(StrictModel):
+    request_id: Identifier
+    actor: Actor
+    session_id: Identifier
+    trip_id: Annotated[str, StringConstraints(pattern=r"^TRIP-\d{4}-\d{3}$", max_length=40)]
+    action_summary: Annotated[str, StringConstraints(strip_whitespace=True, min_length=8, max_length=240)]
+    idempotency_key: Annotated[str, StringConstraints(min_length=4, max_length=120)]
+
+
+PreferenceKey = Literal["response_language", "preferred_output_format"]
+
+
 class PresentationPlan(StrictModel):
     highlight_ids: Annotated[list[Annotated[str, StringConstraints(max_length=40)]], Field(max_length=6)]

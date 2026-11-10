@@ -30,6 +30,8 @@ Tài liệu này định nghĩa schema và quan hệ cho mock systems. Đây là
 
 `approval_id`, `trip_id` hoặc `report_id`, `request_type`, `status`, `action_summary`, `created_at`, `updated_at`. `status`: `pending`, `approved`, `rejected`. Đây là simulation record, không trigger side effect.
 
+Tool `request_approval` chỉ được tạo record mới với `status=pending` sau yêu cầu rõ ràng của user. Agent không được cập nhật status thành `approved` hoặc `rejected`; quyết định đó không được tự động mô phỏng qua tool này.
+
 ### Expense Report
 
 `report_id`, `trip_id`, `traveler_id`, `status`, `currency`, `line_items[]`, `receipts_status`, `submitted_at`. Mỗi line item gồm `item_id`, `category`, `amount`, `currency`, `date`, `description`, `receipt_present`. Tất cả số tiền là dữ liệu ví dụ.
@@ -43,6 +45,8 @@ Chunk: `chunk_id`, `doc_id`, `source`, `section`/`page`, `version`, `category`, 
 ### Draft Artifact
 
 `draft_id`, `artifact_type`, `status`, `delivery_status`, `source_ids[]`, `content`, `created_at`, `idempotency_key`. Draft content không gửi ra ngoài; delivery status ví dụ `not_sent`, `not_published`, `failed_delivery`.
+
+Runtime workspace lưu record bền vững trong SQLite cục bộ và scope idempotency theo actor; fixture-only tests có thể dùng memory store.
 
 ## 3. Quan hệ và integrity
 

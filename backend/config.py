@@ -15,6 +15,7 @@ class Settings:
     api_key: str = ""
     timeout: float = 12
     max_retries: int = 1
+    state_db_path: str = ""
 
     def __post_init__(self):
         if self.provider not in {"fake", "gemini"}:
@@ -29,4 +30,5 @@ class Settings:
         load_dotenv(ROOT / ".env")
         return cls(provider=os.getenv("LLM_PROVIDER", "fake"), model=os.getenv("GEMINI_MODEL", ""),
                    api_key=os.getenv("GEMINI_API_KEY", ""), timeout=float(os.getenv("LLM_TIMEOUT_SECONDS", "12")),
-                   max_retries=int(os.getenv("LLM_MAX_RETRIES", "1")))
+                   max_retries=int(os.getenv("LLM_MAX_RETRIES", "1")),
+                   state_db_path=os.getenv("AGENT_STATE_DB", str(ROOT / "data" / "processed" / "agent_state.sqlite")))

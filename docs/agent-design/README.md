@@ -5,7 +5,7 @@ Tài liệu thiết kế nền tảng cho Global Business Travel Operations Agen
 ## Tài liệu
 
 1. [Architecture](./01-architecture.md): thành phần, luồng điều khiển, nguồn sự thật và ranh giới hệ thống.
-2. [Agent contract](./02-agent-contract.md): vai trò, yêu cầu, response, run state và terminal outcomes.
+2. [Agent contract](./02-agent-contract.md): vai trò, yêu cầu, response, run/session state, opt-in preferences và terminal outcomes.
 3. [Tool contract](./03-tool-contract.md): registry, allowlist, dispatcher, schema, lỗi, budget và retry.
 4. [Domain data contract](./04-domain-data-contract.md): entity, identifiers, quan hệ, metadata và yêu cầu dataset; đây là schema spec, chưa phải dữ liệu mock.
 5. [Workflow integration requirements](./05-workflow-integration.md): yêu cầu mà ba workflow phải tuân thủ khi tích hợp với Agent.

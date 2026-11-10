@@ -88,6 +88,9 @@ S_SEARCH = _obj(query={"type": "string", "minLength": 2, "maxLength": 200},
                 max_results={"type": "integer", "minimum": 1, "maximum": 5})
 S_DRAFT = _obj(payload={"type": "object"}, source_ids={"type": "array", "items": {"type": "string", "maxLength": 40}},
                idempotency_key={"type": "string", "minLength": 4, "maxLength": 120})
+S_APPROVAL = _obj(trip_id={"type": "string", "pattern": TRIP_ID},
+                  action_summary={"type": "string", "minLength": 8, "maxLength": 240},
+                  idempotency_key={"type": "string", "minLength": 4, "maxLength": 120})
 
 ALL_ROLES = {"employee", "travel_operations_reviewer", "approver"}
 DRAFT_ROLES = {"employee", "travel_operations_reviewer"}
@@ -98,7 +101,7 @@ class MockSystems:
     def __init__(self, data_dir: Optional[Path] = None, *, extra_chunks: Optional[list] = None,
                  faults: Optional[dict] = None, always_fail: Optional[set] = None,
                  mutate: Optional[Callable] = None, policy_encoder=None,
-                 policy_semantic_mode: Optional[str] = None):
+                 policy_semantic_mode: Optional[str] = None, draft_store=None, approval_store=None):
         d = Path(data_dir or DEFAULT_DATA)
         self.trips = {r["trip_id"]: r for r in self._csv(d / "travel-requests/travel_requests.csv")}
         self.profiles = {r["traveler_id"]: r for r in json.loads((d / "traveler-profiles/traveler_profiles.json").read_text("utf-8"))}
@@ -106,7 +109,10 @@ class MockSystems:
         self.approvals = self._csv(d / "approvals/approvals.csv")
         self.reports = {r["report_id"]: r for r in json.loads((d / "expenses/expense_reports.json").read_text("utf-8"))}
         self.chunks = self._load_policy(d / "policy-knowledge-base/documents") + list(extra_chunks or [])
-        self.drafts: dict = {}              # idempotency_key -> draft record (in-memory sandbox)
+        self.drafts: dict = {}              # local mirror; persistent store is optional for isolated fixtures
+        self.draft_store = draft_store
+        self.approval_store = approval_store
+        self.simulated_approvals: dict = {}
         self.calls: list = []               # moi tool call toi implementation (de test)
         self.faults = {k: list(v) for k, v in (faults or {}).items()}
         self.always_fail = set(always_fail or ())
@@ -120,12 +126,13 @@ class MockSystems:
             "get_traveler_profile": ({PRE}, ALL_ROLES, S_TRAVELER, self.get_traveler_profile),
             "get_itinerary": ({INT}, ALL_ROLES, S_TRIP, self.get_itinerary),
             "get_approval_status": ({PRE}, ALL_ROLES, S_TRIP, self.get_approval_status),
+            "request_approval": ({PRE}, DRAFT_ROLES, S_APPROVAL, self.request_approval),
             "search_travel_policy": ({PRE, INT, POST}, ALL_ROLES, S_SEARCH, self.search_travel_policy),
             "get_expense_report": ({POST}, ALL_ROLES, S_REPORT, self.get_expense_report),
             "calculate_expense_summary": ({POST}, ALL_ROLES, S_REPORT, self.calculate_expense_summary),
-            "create_travel_checklist_draft": ({PRE}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("travel_checklist", a)),
-            "create_escalation_or_support_draft": ({INT}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("disruption_escalation_note", a)),
-            "create_expense_review_draft": ({POST}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("expense_review", a)),
+            "create_travel_checklist_draft": ({PRE}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("travel_checklist", a, ctx)),
+            "create_escalation_or_support_draft": ({INT}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("disruption_escalation_note", a, ctx)),
+            "create_expense_review_draft": ({POST}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("expense_review", a, ctx)),
         }
 
     # ---------------------------------------------------------------- loaders
@@ -164,7 +171,8 @@ class MockSystems:
         workflows, roles, schema, handler = entry
         if ctx.get("workflow") not in workflows:
             return _err("UNAUTHORIZED", "Tool không nằm trong allowlist của workflow.")
-        if ctx.get("actor", {}).get("role") not in roles:
+        actor = ctx.get("actor", {})
+        if actor.get("role") not in roles or not actor.get("actor_id"):
             return _err("UNAUTHORIZED", "Vai trò không được phép gọi tool này.")
         bad = validate_schema(schema, args)
         if bad:
@@ -206,11 +214,53 @@ class MockSystems:
         e = self._trip_scope(args["trip_id"], ctx)
         if e:
             return e
+        saved = self.approval_store.latest_approval_request(args["trip_id"]) if self.approval_store else None
+        if not saved:
+            saved = next((a for a in reversed(list(self.simulated_approvals.values()))
+                          if a["trip_id"] == args["trip_id"]), None)
+        if saved:
+            return _ok({k: saved[k] for k in ("approval_id", "trip_id", "request_type", "status", "action_summary")},
+                       "mock_approval_system")
         rows = sorted((a for a in self.approvals if a["trip_id"] == args["trip_id"]), key=lambda a: a["created_at"])
         if not rows:
             return _err("NOT_FOUND", "Không có bản ghi approval.")
         a = rows[-1]
         return _ok({k: a[k] for k in ("approval_id", "trip_id", "request_type", "status", "action_summary")}, "mock_approval_system")
+
+    def request_approval(self, args, ctx):
+        if ctx.get("explicit_approval_request") is not True:
+            return _err("UNAUTHORIZED", "Approval simulation requires an explicit user request.")
+        scope_error = self._trip_scope(args["trip_id"], ctx)
+        if scope_error:
+            return scope_error
+        summary = args["action_summary"].strip()
+        if any(ord(char) < 32 for char in summary) or re.search(
+                r"(passport|visa.{0,12}(?:number|no|id)|credit.?card|bank.?account|password|api.?key|token|@|\b\d{9,}\b)",
+                summary, re.I):
+            return _err("INVALID_ARGUMENT", "Approval summary must not contain sensitive personal data.")
+        key = args["idempotency_key"]
+        actor_id = ctx.get("actor", {}).get("actor_id", "")
+        scoped_key = (actor_id, key)
+        try:
+            if self.approval_store:
+                record, replay = self.approval_store.create_approval_request(
+                    args["trip_id"], summary, key, actor_id
+                )
+            elif scoped_key in self.simulated_approvals:
+                record = self.simulated_approvals[scoped_key]
+                if record["trip_id"] != args["trip_id"] or record["action_summary"] != summary:
+                    return _err("CONFLICT", "Idempotency key is already assigned to another approval request.")
+                replay = True
+            else:
+                record = {"approval_id": f"APR-2026-{900 + len(self.simulated_approvals) + 1:03d}",
+                          "trip_id": args["trip_id"], "request_type": "trip", "status": "pending",
+                          "action_summary": summary, "idempotency_key": key}
+                self.simulated_approvals[scoped_key] = record
+                replay = False
+        except ValueError:
+            return _err("CONFLICT", "Idempotency key is already assigned to another approval request.")
+        return _ok({k: record[k] for k in ("approval_id", "trip_id", "request_type", "status", "action_summary")} |
+                   {"idempotent_replay": replay}, "mock_approval_system", False)
 
     def get_expense_report(self, args, ctx):
         r = self.reports.get(args["report_id"])
@@ -261,12 +311,21 @@ class MockSystems:
         return _ok({"results": res}, "mock_policy_knowledge_base")
 
     # ---------------------------------------------------------------- draft tools (idempotent)
-    def _draft(self, artifact_type, args):
+    def _draft(self, artifact_type, args, ctx):
         key = args["idempotency_key"]
-        if key in self.drafts:
-            return _ok(dict(self.drafts[key], idempotent_replay=True), "mock_draft_workspace", False)
+        actor_id = ctx.get("actor", {}).get("actor_id", "")
+        scoped_key = (actor_id, key)
+        if self.draft_store:
+            try:
+                rec, replay = self.draft_store.create_draft(artifact_type, args, actor_id)
+            except (TypeError, ValueError):
+                return _err("CONFLICT", "Draft payload, source IDs, or idempotency key is invalid.")
+            self.drafts[scoped_key] = rec
+            return _ok(dict(rec, idempotent_replay=replay), "mock_draft_workspace", False)
+        if scoped_key in self.drafts:
+            return _ok(dict(self.drafts[scoped_key], idempotent_replay=True), "mock_draft_workspace", False)
         rec = {"draft_id": f"DRAFT-2026-{len(self.drafts) + 1:03d}", "artifact_type": artifact_type,
                "status": "draft_created", "delivery_status": "not_sent", "source_ids": args["source_ids"],
                "content": args["payload"], "idempotency_key": key}
-        self.drafts[key] = rec
+        self.drafts[scoped_key] = rec
         return _ok(dict(rec, idempotent_replay=False), "mock_draft_workspace", False)
