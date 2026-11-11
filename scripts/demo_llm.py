@@ -23,13 +23,15 @@ def main():
     if args.function_call:
         if settings.provider != "gemini":
             parser.error("--function-call requires LLM_PROVIDER=gemini, GEMINI_MODEL and GEMINI_API_KEY")
+        message = "Đọc trạng thái phê duyệt hiện tại của TRIP-2026-001."
         result = tool_turn(client,
-            [{"role": "user", "parts": [{"text": "Đọc yêu cầu công tác TRIP-2026-001."}]}],
-            read_tool_declarations(systems.registry), ["get_trip_request"], systems,
+            [{"role": "user", "parts": [{"text": message}]}],
+            read_tool_declarations(systems.registry), ["get_trip_request", "get_approval_status"], systems,
             {"workflow": "pre_trip", "actor": {"role": "employee", "actor_id": "EMP-001"},
              "request_id": "REQ-DEMO-FC", "run_id": "RUN-DEMO-FC", "bound_arguments": {"trip_id": "TRIP-2026-001"}})
-        # Thought signatures and raw history remain transient; the walkthrough prints only the observation.
-        print(json.dumps(result["observation"], ensure_ascii=False, indent=2))
+        # Keep thought signatures and conversation history out of the CLI output.
+        print(json.dumps({"tool": result["tool_name"], "observation": result["observation"]},
+                         ensure_ascii=False, indent=2))
         return
     service = LLMService(client, systems)
     cases = [("Chuẩn bị công tác Tokyo", "EMP-002", {"trip_id": "TRIP-2026-002"}),

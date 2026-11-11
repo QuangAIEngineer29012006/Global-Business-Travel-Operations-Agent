@@ -26,7 +26,7 @@ workflow là `pre_trip`, `in_trip`, `post_trip`; traveler ID dùng `EMP-*`.
 | `backend/prompts.py` | Prompt trình bày, viết lại text và function calling |
 | `backend/models.py` | Schema request theo contract; validation kết quả trình bày |
 | `backend/service.py` | Gọi workflow chung, giới hạn model calls, fallback |
-| `backend/function_calling.py` | Adapter một lượt model proposal → dispatcher → function response |
+| `backend/function_calling.py` | Đề xuất tool, kiểm tra arguments đã bind và đóng gói observation cho Gemini |
 | `backend/main.py` | API `GET /api/health`, `POST /api/runs` |
 
 ## Cài đặt và chạy
@@ -91,25 +91,54 @@ Backend không lưu raw conversation, không tạo persistent memory riêng. Mem
 
 ## Native function calling để nhóm tích hợp
 
-`GeminiClient.propose_tool()` gửi `functionDeclarations` và đọc native `functionCall`.
-`tool_turn()` chạy tối đa một proposal và một lời gọi dispatcher. Nó giới hạn tên tool, buộc arguments theo ID
-caller đã bind; dispatcher hiện có tiếp tục kiểm tra workflow/role/schema/domain. Function response và model content,
-kể cả thought signature, được giữ nguyên trong history tạm, không ghi log hoặc file mặc định.
-Trước khi trả observation cho model, adapter kiểm tra success có `data`/metadata nguồn và error có
-`code`, `message`, `retryable`; envelope thiếu trường hoặc có đồng thời success/error bị từ chối.
+`propose_tool_call()` gửi cho Gemini đúng các khai báo tool được caller cho phép ở phase hiện tại.
+Nó nhận đúng một `functionCall`, kiểm tra tên tool và ID đã bind, rồi trả `name` và `arguments` cho caller.
+Khi tích hợp với registry có `request_approval`, caller phải đánh dấu yêu cầu rõ ràng và bind toàn bộ
+tham số. Demo trên nhánh `backend` chỉ cấp hai tool đọc.
+
+Khi nối vào workflow, kiểm tra budget trước khi gọi model và chạy tool qua `Executor.call()` để
+dispatcher kiểm tra quyền, schema và domain. Sau đó dùng `complete_tool_turn()` để kiểm tra
+observation và tạo Gemini function response. Ví dụ cho một phase đọc trước chuyến đi:
+
+```python
+from backend.function_calling import complete_tool_turn, propose_tool_call, read_tool_declarations
+
+proposal = propose_tool_call(
+    client, contents, read_tool_declarations(registry),
+    ["get_trip_request", "get_approval_status"],
+    bound_arguments={"trip_id": validated_trip_id},
+)
+observation = executor.call(proposal.name, proposal.arguments, phase="read_trip_status")
+turn = complete_tool_turn(contents, proposal, observation)
+```
+
+`turn` có observation, token usage và retry count. History dùng để tiếp tục với Gemini trong bộ nhớ,
+bao gồm function call ID và thought signature. Trace chỉ cần ghi tên tool, tham số đã lọc,
+kết quả kiểm tra và lý do dừng. Nếu adapter trả `LLMError`, orchestrator quyết định dừng
+hay chuyển sang luồng đọc bằng code theo budget còn lại.
+
+`tool_turn()` kết hợp hai hàm trên với đúng một lời gọi dispatcher cho CLI và smoke test.
 
 ```bash
 python scripts/demo_llm.py --function-call
 ```
 
-Lệnh cần Gemini đã cấu hình; chỉ đọc `TRIP-2026-001` qua `get_trip_request`, không ghi dữ liệu.
-Adapter không có vòng lặp tự trị hoặc write tools trong demo. Caller điều phối chịu trách nhiệm budget cho nhiều lượt.
-Tham chiếu chính thức: [Gemini function calling](https://ai.google.dev/gemini-api/docs/function-calling).
+Lệnh cần Gemini đã cấu hình. Ví dụ hỏi trạng thái duyệt của `TRIP-2026-001` và cho model chọn giữa
+`get_trip_request` và `get_approval_status`. CLI in tool thực sự được chọn và observation.
+Ngày 11/11/2026, demo với `gemini-3.5-flash-lite` đã chọn `get_approval_status` và nhận
+`pending` từ mock approval system.
 
-Theo contract 06 hiện tại, API dùng workflow deterministic và **không gọi native function calling cho từng bước**.
-Việc nối model đề xuất mọi tool call theo mục 7 PDF là phần tích hợp toàn nhóm; backend không tuyên bố đã hoàn thành
-toàn bộ yêu cầu Agentic RAG hay function-calling orchestration của project. `search_travel_policy` hiện do dispatcher
-có sẵn của `huy` cung cấp; người phụ trách RAG có thể thay implementation qua dependency injection.
+## Phần cần bàn giao theo PDF
+
+`POST /api/runs` hiện chạy workflow Python rồi dùng Gemini để trình bày. Các hàm trên là điểm nối
+cho người phụ trách orchestrator. Demo CLI xác minh một lượt native tool call.
+
+| Người phụ trách | Việc còn lại và tiêu chí kiểm tra |
+|---|---|
+| Workflow / orchestrator (§7, §10.1, §16) | Gắn proposal vào ít nhất một luồng nghiệp vụ qua `/api/runs`. Trace thể hiện Gemini đề xuất, executor kiểm tra và chạy tool, rồi workflow quyết định bước tiếp theo. Câu hỏi chỉ xem approval/itinerary đi vào nhánh đọc và không tạo draft. |
+| Approval / mock tools (§11.2, §12) | Kiểm tra approval trước khi ghi draft. Với `pending` hoặc `rejected`, assert không gọi tool ghi và không có draft mới. Approval mô phỏng không che bản ghi đã duyệt. Kiểm tra scope của profile tool và trả lỗi có kiểm soát nếu mock tool trả payload sai cấu trúc. |
+| Agentic RAG (§10) | Cho phép hỏi policy chung qua retrieval mà không cần mã chuyến nếu câu hỏi không phụ thuộc chuyến đi. Với câu hỏi kết hợp, đọc facts trước và chỉ giữ citation hỗ trợ từng hướng dẫn. Bổ sung ca evidence sai ngữ cảnh, no-result và version conflict. |
+| Evaluation / bàn giao (§13–14) | Thêm `argument_accuracy` cho ID và tham số quan trọng, truyền `case_id` vào từng bước trace và đếm số lần retry thực sự. Cập nhật ca pending để kiểm tra không ghi draft. Sau tích hợp, chạy lại offline/live, ghi tỷ lệ fallback và sửa README gốc để khởi động bằng `backend.main:create_app --factory`. |
 
 ## Kiểm thử và giới hạn
 

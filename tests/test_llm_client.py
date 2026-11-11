@@ -4,10 +4,11 @@ import pytest
 import requests
 
 from backend.config import Settings
-from backend.function_calling import read_tool_declarations, tool_turn
+from backend.function_calling import complete_tool_turn, propose_tool_call, read_tool_declarations, tool_turn
 from backend.llm_client import GeminiClient, LLMError, parse_json
 from backend.service import LLMService
 from src.dev_systems import MockSystems
+from src.workflows import Executor, RunState
 
 
 def client():
@@ -110,7 +111,48 @@ def test_native_tool_turn_uses_existing_dispatcher_and_preserves_thought_signatu
     assert result["contents"][-1]["parts"][0]["functionResponse"]["id"] == "call-1"
     payload = post.call_args.kwargs["json"]
     assert payload["toolConfig"]["functionCallingConfig"]["mode"] == "ANY"
-    assert payload["tools"][0]["functionDeclarations"] == declarations
+    assert [d["name"] for d in payload["tools"][0]["functionDeclarations"]] == ["get_trip_request"]
+
+
+def test_native_proposal_can_be_executed_by_a_caller_owned_executor(monkeypatch):
+    ms = MockSystems()
+    content = tool_content("get_approval_status")
+    post = Mock(return_value=envelope(content["parts"]))
+    monkeypatch.setattr("backend.llm_client.requests.post", post)
+    context = tool_context()
+    contents = [{"role": "user", "parts": [{"text": "Đọc trạng thái phê duyệt TRIP-2026-001."}]}]
+    proposal = propose_tool_call(
+        client(), contents, [*read_tool_declarations(ms.registry), {"name": "request_approval"}],
+        ["get_trip_request", "get_approval_status", "request_approval"],
+        bound_arguments=context["bound_arguments"],
+    )
+    assert ms.calls == []
+    assert proposal.name == "get_approval_status" and proposal.arguments == context["bound_arguments"]
+    payload = post.call_args.kwargs["json"]
+    assert {d["name"] for d in payload["tools"][0]["functionDeclarations"]} == {
+        "get_trip_request", "get_approval_status",
+    }
+
+    state = RunState(workflow="pre_trip", actor=context["actor"], max_steps=1)
+    executor = Executor(ms, state, frozenset({"get_trip_request", "get_approval_status"}))
+    observation = executor.call(proposal.name, proposal.arguments, "fetch_approval")
+    result = complete_tool_turn(contents, proposal, observation)
+    assert state.step_count == 1 and state.trace[-1]["action"] == "get_approval_status"
+    assert result["observation"]["data"]["status"] == "pending"
+    assert result["contents"][-2] == content
+    assert result["contents"][-1]["parts"][0]["functionResponse"]["id"] == "call-1"
+    assert (result["input_tokens"], result["output_tokens"]) == (18, 6)
+    assert post.call_count == 1
+
+
+def test_native_approval_requires_explicit_intent_before_provider_call(monkeypatch):
+    post = Mock()
+    monkeypatch.setattr("backend.llm_client.requests.post", post)
+    ms = MockSystems()
+    with pytest.raises(LLMError, match="approval_request_not_explicit"):
+        tool_turn(client(), [], [{"name": "request_approval"}], ["request_approval"], ms, tool_context())
+    post.assert_not_called()
+    assert ms.calls == []
 
 
 @pytest.mark.parametrize("name,args,expected", [("shell", {"command": "whoami"}, "invalid_function_call"),

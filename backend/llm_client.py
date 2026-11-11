@@ -154,20 +154,30 @@ class GeminiClient:
         result = self._generate(system, copy.deepcopy(contents), tools=[{"functionDeclarations": declarations}],
                                 toolConfig={"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": list(allowed_names)}})
         try:
-            calls = [p["functionCall"] for p in result.value["parts"] if "functionCall" in p]
-            if len(calls) != 1 or calls[0]["name"] not in allowed_names or not isinstance(calls[0]["args"], dict):
+            call = single_function_call(result.value)
+            if call["name"] not in allowed_names:
                 raise ValueError("Invalid function call")
-        except (KeyError, TypeError, ValueError):
+        except ValueError:
             raise LLMError("invalid_function_call", result.retry_count, result=result) from None
         return result
 
 
-def function_response(model_content, observation):
-    """Return a Gemini tool-result turn; keep the original model content, including thought signatures."""
-    calls = [p["functionCall"] for p in model_content["parts"] if "functionCall" in p]
-    if len(calls) != 1:
+def single_function_call(model_content):
+    parts = model_content.get("parts") if isinstance(model_content, dict) else None
+    if not isinstance(parts, list) or any(not isinstance(part, dict) for part in parts):
+        raise ValueError("Invalid model parts")
+    calls = [part["functionCall"] for part in parts if "functionCall" in part]
+    if len(calls) != 1 or not isinstance(calls[0], dict):
         raise ValueError("Expected one function call")
     call = calls[0]
+    if not isinstance(call.get("name"), str) or not call["name"].strip() or not isinstance(call.get("args"), dict):
+        raise ValueError("Invalid function call")
+    return call
+
+
+def function_response(model_content, observation):
+    """Return a Gemini tool-result turn; keep the original model content, including thought signatures."""
+    call = single_function_call(model_content)
     response = {"name": call["name"], "response": observation}
     if "id" in call:
         response["id"] = call["id"]
