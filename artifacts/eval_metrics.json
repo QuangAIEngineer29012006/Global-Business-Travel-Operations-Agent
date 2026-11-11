@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T08:17:49.695529+00:00",
+  "generated_at": "2026-11-11T03:05:24.734425+00:00",
   "summary": {
     "total_cases": 20,
     "overall_pass_count": 20,
@@ -14,7 +14,7 @@
       "avg_steps_per_run": 3.85,
       "avg_tool_calls_per_run": 3.85,
       "avg_retrievals_per_run": 1.6,
-      "avg_latency_ms": 32.21,
+      "avg_latency_ms": 2901.76,
       "max_steps_configured": 12,
       "max_retrievals_configured": 6
     },
@@ -62,7 +62,7 @@
     },
     "execution_mode": {
       "llm_mode": "offline_deterministic_simulator",
-      "policy_semantic_mode": "keyword"
+      "policy_semantic_mode": "hybrid"
     }
   },
   "cases": [
@@ -119,7 +119,7 @@
         "tool_calls": 6,
         "retrieval_calls": 3,
         "retry_events": 0,
-        "latency_ms": 40.67
+        "latency_ms": 54393.35
       },
       "artifacts": [
         {
@@ -189,7 +189,7 @@
         "tool_calls": 3,
         "retrieval_calls": 1,
         "retry_events": 0,
-        "latency_ms": 34.68
+        "latency_ms": 212.39
       },
       "artifacts": [
         {
@@ -261,7 +261,7 @@
         "tool_calls": 5,
         "retrieval_calls": 2,
         "retry_events": 0,
-        "latency_ms": 32.58
+        "latency_ms": 229.94
       },
       "artifacts": [
         {
@@ -338,7 +338,7 @@
         "tool_calls": 7,
         "retrieval_calls": 4,
         "retry_events": 0,
-        "latency_ms": 33.85
+        "latency_ms": 296.84
       },
       "artifacts": [
         {
@@ -401,7 +401,7 @@
         "tool_calls": 1,
         "retrieval_calls": 0,
         "retry_events": 0,
-        "latency_ms": 28.25
+        "latency_ms": 27.46
       },
       "artifacts": [],
       "message": "Chuyến đi đang ở trạng thái rejected; không tạo checklist.",
@@ -458,7 +458,7 @@
         "tool_calls": 1,
         "retrieval_calls": 0,
         "retry_events": 0,
-        "latency_ms": 25.96
+        "latency_ms": 24.96
       },
       "artifacts": [],
       "message": "Yêu cầu chuyến đi còn thiếu trường bắt buộc; không suy đoán.",
@@ -513,7 +513,7 @@
         "tool_calls": 0,
         "retrieval_calls": 0,
         "retry_events": 0,
-        "latency_ms": 27.54
+        "latency_ms": 24.31
       },
       "artifacts": [],
       "message": "Mã không đúng định dạng.",
@@ -569,7 +569,7 @@
         "tool_calls": 1,
         "retrieval_calls": 0,
         "retry_events": 0,
-        "latency_ms": 27.32
+        "latency_ms": 23.7
       },
       "artifacts": [],
       "message": "Không tìm thấy bản ghi theo mã đã cung cấp.",
@@ -634,7 +634,7 @@
         "tool_calls": 5,
         "retrieval_calls": 2,
         "retry_events": 0,
-        "latency_ms": 33.76
+        "latency_ms": 263.15
       },
       "artifacts": [
         {
@@ -703,7 +703,7 @@
         "tool_calls": 3,
         "retrieval_calls": 1,
         "retry_events": 0,
-        "latency_ms": 32.91
+        "latency_ms": 251.65
       },
       "artifacts": [
         {
@@ -778,7 +778,7 @@
         "tool_calls": 7,
         "retrieval_calls": 4,
         "retry_events": 0,
-        "latency_ms": 33.23
+        "latency_ms": 263.91
       },
       "artifacts": [
         {
@@ -850,7 +850,7 @@
         "tool_calls": 6,
         "retrieval_calls": 3,
         "retry_events": 0,
-        "latency_ms": 32.37
+        "latency_ms": 289.43
       },
       "artifacts": [
         {
@@ -919,7 +919,7 @@
         "tool_calls": 4,
         "retrieval_calls": 1,
         "retry_events": 2,
-        "latency_ms": 30.27
+        "latency_ms": 218.54
       },
       "artifacts": [
         {
@@ -985,7 +985,7 @@
         "tool_calls": 3,
         "retrieval_calls": 0,
         "retry_events": 5,
-        "latency_ms": 31.63
+        "latency_ms": 23.71
       },
       "artifacts": [],
       "message": "Hệ thống mock tạm thời không khả dụng; cần xử lý thủ công.",
@@ -1044,7 +1044,7 @@
         "tool_calls": 3,
         "retrieval_calls": 1,
         "retry_events": 0,
-        "latency_ms": 24.24
+        "latency_ms": 209.46
       },
       "artifacts": [],
       "message": "Đạt giới hạn ngân sách bước/retrieval; dừng an toàn.",
@@ -1105,7 +1105,7 @@
         "tool_calls": 7,
         "retrieval_calls": 4,
         "retry_events": 0,
-        "latency_ms": 34.07
+        "latency_ms": 306.12
       },
       "artifacts": [
         {
@@ -1168,7 +1168,7 @@
         "tool_calls": 1,
         "retrieval_calls": 0,
         "retry_events": 0,
-        "latency_ms": 28.74
+        "latency_ms": 26.18
       },
       "artifacts": [],
       "message": "Không có quyền truy cập bản ghi này trong phạm vi hiện tại.",
@@ -1226,7 +1226,7 @@
         "tool_calls": 2,
         "retrieval_calls": 0,
         "retry_events": 0,
-        "latency_ms": 43.11
+        "latency_ms": 303.99
       },
       "artifacts": [],
       "message": "Approval đã bị từ chối; không tạo checklist.",
@@ -1295,7 +1295,7 @@
         "tool_calls": 6,
         "retrieval_calls": 3,
         "retry_events": 0,
-        "latency_ms": 43.13
+        "latency_ms": 363.71
       },
       "artifacts": [
         {
@@ -1370,7 +1370,7 @@
         "tool_calls": 6,
         "retrieval_calls": 3,
         "retry_events": 0,
-        "latency_ms": 25.97
+        "latency_ms": 282.49
       },
       "artifacts": [
         {

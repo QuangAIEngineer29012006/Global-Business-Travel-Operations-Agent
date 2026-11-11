@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T08:17:49.695529+00:00",
+  "generated_at": "2026-11-11T03:05:24.734425+00:00",
   "total_cases": 20,
   "traces": [
     {
@@ -11,9 +11,9 @@
       "steps": 6,
       "trace": [
         {
-          "trace_id": "RUN-77d8407d:1",
+          "trace_id": "RUN-546dc4a1:1",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -46,9 +46,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-77d8407d:2",
+          "trace_id": "RUN-546dc4a1:2",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -77,9 +77,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-77d8407d:3",
+          "trace_id": "RUN-546dc4a1:3",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -106,9 +106,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-77d8407d:4",
+          "trace_id": "RUN-546dc4a1:4",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -135,9 +135,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-77d8407d:5",
+          "trace_id": "RUN-546dc4a1:5",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -164,9 +164,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-77d8407d:6",
+          "trace_id": "RUN-546dc4a1:6",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -201,8 +201,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-77d8407d:llm",
-          "run_id": "RUN-77d8407d",
+          "trace_id": "RUN-546dc4a1:llm",
+          "run_id": "RUN-546dc4a1",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -216,12 +216,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "completed",
-          "timestamp": "2026-11-10T08:17:49.080419+00:00"
+          "timestamp": "2026-11-11T03:05:21.081247+00:00"
         },
         {
-          "trace_id": "RUN-77d8407d:7",
+          "trace_id": "RUN-546dc4a1:7",
           "case_id": "",
-          "run_id": "RUN-77d8407d",
+          "run_id": "RUN-546dc4a1",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -250,9 +250,9 @@
       "steps": 3,
       "trace": [
         {
-          "trace_id": "RUN-498ff6f6:1",
+          "trace_id": "RUN-b04bdc55:1",
           "case_id": "",
-          "run_id": "RUN-498ff6f6",
+          "run_id": "RUN-b04bdc55",
           "step": 1,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -281,9 +281,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-498ff6f6:2",
+          "trace_id": "RUN-b04bdc55:2",
           "case_id": "",
-          "run_id": "RUN-498ff6f6",
+          "run_id": "RUN-b04bdc55",
           "step": 2,
           "workflow": "in_trip",
           "phase": "retrieve",
@@ -310,9 +310,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-498ff6f6:3",
+          "trace_id": "RUN-b04bdc55:3",
           "case_id": "",
-          "run_id": "RUN-498ff6f6",
+          "run_id": "RUN-b04bdc55",
           "step": 3,
           "workflow": "in_trip",
           "phase": "draft",
@@ -347,8 +347,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-498ff6f6:llm",
-          "run_id": "RUN-498ff6f6",
+          "trace_id": "RUN-b04bdc55:llm",
+          "run_id": "RUN-b04bdc55",
           "step": 3,
           "workflow": "in_trip",
           "phase": "presentation",
@@ -362,12 +362,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "completed",
-          "timestamp": "2026-11-10T08:17:49.115867+00:00"
+          "timestamp": "2026-11-11T03:05:21.295795+00:00"
         },
         {
-          "trace_id": "RUN-498ff6f6:4",
+          "trace_id": "RUN-b04bdc55:4",
           "case_id": "",
-          "run_id": "RUN-498ff6f6",
+          "run_id": "RUN-b04bdc55",
           "step": 3,
           "workflow": "in_trip",
           "phase": "terminal",
@@ -396,9 +396,9 @@
       "steps": 5,
       "trace": [
         {
-          "trace_id": "RUN-e7657d57:1",
+          "trace_id": "RUN-38244471:1",
           "case_id": "",
-          "run_id": "RUN-e7657d57",
+          "run_id": "RUN-38244471",
           "step": 1,
           "workflow": "post_trip",
           "phase": "fetch_report",
@@ -430,9 +430,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e7657d57:2",
+          "trace_id": "RUN-38244471:2",
           "case_id": "",
-          "run_id": "RUN-e7657d57",
+          "run_id": "RUN-38244471",
           "step": 2,
           "workflow": "post_trip",
           "phase": "calculate",
@@ -462,9 +462,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e7657d57:3",
+          "trace_id": "RUN-38244471:3",
           "case_id": "",
-          "run_id": "RUN-e7657d57",
+          "run_id": "RUN-38244471",
           "step": 3,
           "workflow": "post_trip",
           "phase": "retrieve",
@@ -491,9 +491,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e7657d57:4",
+          "trace_id": "RUN-38244471:4",
           "case_id": "",
-          "run_id": "RUN-e7657d57",
+          "run_id": "RUN-38244471",
           "step": 4,
           "workflow": "post_trip",
           "phase": "retrieve",
@@ -520,9 +520,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e7657d57:5",
+          "trace_id": "RUN-38244471:5",
           "case_id": "",
-          "run_id": "RUN-e7657d57",
+          "run_id": "RUN-38244471",
           "step": 5,
           "workflow": "post_trip",
           "phase": "draft",
@@ -557,8 +557,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e7657d57:llm",
-          "run_id": "RUN-e7657d57",
+          "trace_id": "RUN-38244471:llm",
+          "run_id": "RUN-38244471",
           "step": 5,
           "workflow": "post_trip",
           "phase": "presentation",
@@ -572,12 +572,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "completed",
-          "timestamp": "2026-11-10T08:17:49.150191+00:00"
+          "timestamp": "2026-11-11T03:05:21.525326+00:00"
         },
         {
-          "trace_id": "RUN-e7657d57:6",
+          "trace_id": "RUN-38244471:6",
           "case_id": "",
-          "run_id": "RUN-e7657d57",
+          "run_id": "RUN-38244471",
           "step": 5,
           "workflow": "post_trip",
           "phase": "terminal",
@@ -606,9 +606,9 @@
       "steps": 7,
       "trace": [
         {
-          "trace_id": "RUN-b251207b:1",
+          "trace_id": "RUN-4de39b11:1",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -641,9 +641,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:2",
+          "trace_id": "RUN-4de39b11:2",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -672,9 +672,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:3",
+          "trace_id": "RUN-4de39b11:3",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -701,9 +701,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:4",
+          "trace_id": "RUN-4de39b11:4",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -730,9 +730,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:5",
+          "trace_id": "RUN-4de39b11:5",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -759,9 +759,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:6",
+          "trace_id": "RUN-4de39b11:6",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -788,9 +788,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:7",
+          "trace_id": "RUN-4de39b11:7",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -825,8 +825,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-b251207b:llm",
-          "run_id": "RUN-b251207b",
+          "trace_id": "RUN-4de39b11:llm",
+          "run_id": "RUN-4de39b11",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -840,12 +840,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "awaiting_approval",
-          "timestamp": "2026-11-10T08:17:49.182950+00:00"
+          "timestamp": "2026-11-11T03:05:21.821980+00:00"
         },
         {
-          "trace_id": "RUN-b251207b:8",
+          "trace_id": "RUN-4de39b11:8",
           "case_id": "",
-          "run_id": "RUN-b251207b",
+          "run_id": "RUN-4de39b11",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -874,9 +874,9 @@
       "steps": 1,
       "trace": [
         {
-          "trace_id": "RUN-0558dcba:1",
+          "trace_id": "RUN-122fa51f:1",
           "case_id": "",
-          "run_id": "RUN-0558dcba",
+          "run_id": "RUN-122fa51f",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -909,9 +909,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-0558dcba:2",
+          "trace_id": "RUN-122fa51f:2",
           "case_id": "",
-          "run_id": "RUN-0558dcba",
+          "run_id": "RUN-122fa51f",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -940,9 +940,9 @@
       "steps": 1,
       "trace": [
         {
-          "trace_id": "RUN-8156e98f:1",
+          "trace_id": "RUN-f2a957fe:1",
           "case_id": "",
-          "run_id": "RUN-8156e98f",
+          "run_id": "RUN-f2a957fe",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -975,8 +975,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-8156e98f:llm",
-          "run_id": "RUN-8156e98f",
+          "trace_id": "RUN-f2a957fe:llm",
+          "run_id": "RUN-f2a957fe",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -990,12 +990,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "needs_input",
-          "timestamp": "2026-11-10T08:17:49.239446+00:00"
+          "timestamp": "2026-11-11T03:05:21.874909+00:00"
         },
         {
-          "trace_id": "RUN-8156e98f:2",
+          "trace_id": "RUN-f2a957fe:2",
           "case_id": "",
-          "run_id": "RUN-8156e98f",
+          "run_id": "RUN-f2a957fe",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -1024,9 +1024,9 @@
       "steps": 0,
       "trace": [
         {
-          "trace_id": "RUN-35927b12:1",
+          "trace_id": "RUN-9fcb14b9:1",
           "case_id": "",
-          "run_id": "RUN-35927b12",
+          "run_id": "RUN-9fcb14b9",
           "step": 0,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -1055,9 +1055,9 @@
       "steps": 1,
       "trace": [
         {
-          "trace_id": "RUN-c9ff82bb:1",
+          "trace_id": "RUN-1f85d377:1",
           "case_id": "",
-          "run_id": "RUN-c9ff82bb",
+          "run_id": "RUN-1f85d377",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -1079,9 +1079,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c9ff82bb:2",
+          "trace_id": "RUN-1f85d377:2",
           "case_id": "",
-          "run_id": "RUN-c9ff82bb",
+          "run_id": "RUN-1f85d377",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -1110,9 +1110,9 @@
       "steps": 5,
       "trace": [
         {
-          "trace_id": "RUN-e3afe89a:1",
+          "trace_id": "RUN-53bc8318:1",
           "case_id": "",
-          "run_id": "RUN-e3afe89a",
+          "run_id": "RUN-53bc8318",
           "step": 1,
           "workflow": "post_trip",
           "phase": "fetch_report",
@@ -1144,9 +1144,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e3afe89a:2",
+          "trace_id": "RUN-53bc8318:2",
           "case_id": "",
-          "run_id": "RUN-e3afe89a",
+          "run_id": "RUN-53bc8318",
           "step": 2,
           "workflow": "post_trip",
           "phase": "calculate",
@@ -1176,9 +1176,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e3afe89a:3",
+          "trace_id": "RUN-53bc8318:3",
           "case_id": "",
-          "run_id": "RUN-e3afe89a",
+          "run_id": "RUN-53bc8318",
           "step": 3,
           "workflow": "post_trip",
           "phase": "retrieve",
@@ -1205,9 +1205,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e3afe89a:4",
+          "trace_id": "RUN-53bc8318:4",
           "case_id": "",
-          "run_id": "RUN-e3afe89a",
+          "run_id": "RUN-53bc8318",
           "step": 4,
           "workflow": "post_trip",
           "phase": "retrieve",
@@ -1234,9 +1234,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e3afe89a:5",
+          "trace_id": "RUN-53bc8318:5",
           "case_id": "",
-          "run_id": "RUN-e3afe89a",
+          "run_id": "RUN-53bc8318",
           "step": 5,
           "workflow": "post_trip",
           "phase": "draft",
@@ -1271,8 +1271,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-e3afe89a:llm",
-          "run_id": "RUN-e3afe89a",
+          "trace_id": "RUN-53bc8318:llm",
+          "run_id": "RUN-53bc8318",
           "step": 5,
           "workflow": "post_trip",
           "phase": "presentation",
@@ -1286,12 +1286,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "needs_human",
-          "timestamp": "2026-11-10T08:17:49.326253+00:00"
+          "timestamp": "2026-11-11T03:05:22.185253+00:00"
         },
         {
-          "trace_id": "RUN-e3afe89a:6",
+          "trace_id": "RUN-53bc8318:6",
           "case_id": "",
-          "run_id": "RUN-e3afe89a",
+          "run_id": "RUN-53bc8318",
           "step": 5,
           "workflow": "post_trip",
           "phase": "terminal",
@@ -1320,9 +1320,9 @@
       "steps": 3,
       "trace": [
         {
-          "trace_id": "RUN-6b954b3e:1",
+          "trace_id": "RUN-6f3cb966:1",
           "case_id": "",
-          "run_id": "RUN-6b954b3e",
+          "run_id": "RUN-6f3cb966",
           "step": 1,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -1351,9 +1351,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-6b954b3e:2",
+          "trace_id": "RUN-6f3cb966:2",
           "case_id": "",
-          "run_id": "RUN-6b954b3e",
+          "run_id": "RUN-6f3cb966",
           "step": 2,
           "workflow": "in_trip",
           "phase": "retrieve",
@@ -1380,9 +1380,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-6b954b3e:3",
+          "trace_id": "RUN-6f3cb966:3",
           "case_id": "",
-          "run_id": "RUN-6b954b3e",
+          "run_id": "RUN-6f3cb966",
           "step": 3,
           "workflow": "in_trip",
           "phase": "draft",
@@ -1417,8 +1417,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-6b954b3e:llm",
-          "run_id": "RUN-6b954b3e",
+          "trace_id": "RUN-6f3cb966:llm",
+          "run_id": "RUN-6f3cb966",
           "step": 3,
           "workflow": "in_trip",
           "phase": "presentation",
@@ -1432,12 +1432,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "needs_human",
-          "timestamp": "2026-11-10T08:17:49.359600+00:00"
+          "timestamp": "2026-11-11T03:05:22.435816+00:00"
         },
         {
-          "trace_id": "RUN-6b954b3e:4",
+          "trace_id": "RUN-6f3cb966:4",
           "case_id": "",
-          "run_id": "RUN-6b954b3e",
+          "run_id": "RUN-6f3cb966",
           "step": 3,
           "workflow": "in_trip",
           "phase": "terminal",
@@ -1466,9 +1466,9 @@
       "steps": 7,
       "trace": [
         {
-          "trace_id": "RUN-c5d466ff:1",
+          "trace_id": "RUN-50f7b186:1",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -1501,9 +1501,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:2",
+          "trace_id": "RUN-50f7b186:2",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -1532,9 +1532,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:3",
+          "trace_id": "RUN-50f7b186:3",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1561,9 +1561,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:4",
+          "trace_id": "RUN-50f7b186:4",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1590,9 +1590,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:5",
+          "trace_id": "RUN-50f7b186:5",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1612,9 +1612,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:6",
+          "trace_id": "RUN-50f7b186:6",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1641,9 +1641,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:7",
+          "trace_id": "RUN-50f7b186:7",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1670,9 +1670,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:8",
+          "trace_id": "RUN-50f7b186:8",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -1707,8 +1707,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c5d466ff:llm",
-          "run_id": "RUN-c5d466ff",
+          "trace_id": "RUN-50f7b186:llm",
+          "run_id": "RUN-50f7b186",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -1722,12 +1722,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "needs_human",
-          "timestamp": "2026-11-10T08:17:49.392522+00:00"
+          "timestamp": "2026-11-11T03:05:22.701926+00:00"
         },
         {
-          "trace_id": "RUN-c5d466ff:9",
+          "trace_id": "RUN-50f7b186:9",
           "case_id": "",
-          "run_id": "RUN-c5d466ff",
+          "run_id": "RUN-50f7b186",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -1756,9 +1756,9 @@
       "steps": 6,
       "trace": [
         {
-          "trace_id": "RUN-c8de57ff:1",
+          "trace_id": "RUN-17fd4b09:1",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -1791,9 +1791,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c8de57ff:2",
+          "trace_id": "RUN-17fd4b09:2",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -1822,9 +1822,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c8de57ff:3",
+          "trace_id": "RUN-17fd4b09:3",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1851,9 +1851,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c8de57ff:4",
+          "trace_id": "RUN-17fd4b09:4",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1880,9 +1880,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c8de57ff:5",
+          "trace_id": "RUN-17fd4b09:5",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -1909,9 +1909,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c8de57ff:6",
+          "trace_id": "RUN-17fd4b09:6",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -1946,8 +1946,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-c8de57ff:llm",
-          "run_id": "RUN-c8de57ff",
+          "trace_id": "RUN-17fd4b09:llm",
+          "run_id": "RUN-17fd4b09",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -1961,12 +1961,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "needs_human",
-          "timestamp": "2026-11-10T08:17:49.425862+00:00"
+          "timestamp": "2026-11-11T03:05:22.991521+00:00"
         },
         {
-          "trace_id": "RUN-c8de57ff:7",
+          "trace_id": "RUN-17fd4b09:7",
           "case_id": "",
-          "run_id": "RUN-c8de57ff",
+          "run_id": "RUN-17fd4b09",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -1995,9 +1995,9 @@
       "steps": 4,
       "trace": [
         {
-          "trace_id": "RUN-3f9725d2:1",
+          "trace_id": "RUN-14eb309a:1",
           "case_id": "",
-          "run_id": "RUN-3f9725d2",
+          "run_id": "RUN-14eb309a",
           "step": 1,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -2019,9 +2019,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-3f9725d2:2",
+          "trace_id": "RUN-14eb309a:2",
           "case_id": "",
-          "run_id": "RUN-3f9725d2",
+          "run_id": "RUN-14eb309a",
           "step": 2,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -2050,9 +2050,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-3f9725d2:3",
+          "trace_id": "RUN-14eb309a:3",
           "case_id": "",
-          "run_id": "RUN-3f9725d2",
+          "run_id": "RUN-14eb309a",
           "step": 3,
           "workflow": "in_trip",
           "phase": "retrieve",
@@ -2079,9 +2079,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-3f9725d2:4",
+          "trace_id": "RUN-14eb309a:4",
           "case_id": "",
-          "run_id": "RUN-3f9725d2",
+          "run_id": "RUN-14eb309a",
           "step": 4,
           "workflow": "in_trip",
           "phase": "draft",
@@ -2116,8 +2116,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-3f9725d2:llm",
-          "run_id": "RUN-3f9725d2",
+          "trace_id": "RUN-14eb309a:llm",
+          "run_id": "RUN-14eb309a",
           "step": 4,
           "workflow": "in_trip",
           "phase": "presentation",
@@ -2131,12 +2131,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "completed",
-          "timestamp": "2026-11-10T08:17:49.456038+00:00"
+          "timestamp": "2026-11-11T03:05:23.212114+00:00"
         },
         {
-          "trace_id": "RUN-3f9725d2:5",
+          "trace_id": "RUN-14eb309a:5",
           "case_id": "",
-          "run_id": "RUN-3f9725d2",
+          "run_id": "RUN-14eb309a",
           "step": 4,
           "workflow": "in_trip",
           "phase": "terminal",
@@ -2165,9 +2165,9 @@
       "steps": 3,
       "trace": [
         {
-          "trace_id": "RUN-afe83b91:1",
+          "trace_id": "RUN-fa0446ff:1",
           "case_id": "",
-          "run_id": "RUN-afe83b91",
+          "run_id": "RUN-fa0446ff",
           "step": 1,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -2189,9 +2189,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-afe83b91:2",
+          "trace_id": "RUN-fa0446ff:2",
           "case_id": "",
-          "run_id": "RUN-afe83b91",
+          "run_id": "RUN-fa0446ff",
           "step": 2,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -2213,9 +2213,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-afe83b91:3",
+          "trace_id": "RUN-fa0446ff:3",
           "case_id": "",
-          "run_id": "RUN-afe83b91",
+          "run_id": "RUN-fa0446ff",
           "step": 3,
           "workflow": "in_trip",
           "phase": "fetch_itinerary",
@@ -2237,9 +2237,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-afe83b91:4",
+          "trace_id": "RUN-fa0446ff:4",
           "case_id": "",
-          "run_id": "RUN-afe83b91",
+          "run_id": "RUN-fa0446ff",
           "step": 3,
           "workflow": "in_trip",
           "phase": "terminal",
@@ -2268,9 +2268,9 @@
       "steps": 3,
       "trace": [
         {
-          "trace_id": "RUN-605176fb:1",
+          "trace_id": "RUN-650f6f24:1",
           "case_id": "",
-          "run_id": "RUN-605176fb",
+          "run_id": "RUN-650f6f24",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -2303,9 +2303,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-605176fb:2",
+          "trace_id": "RUN-650f6f24:2",
           "case_id": "",
-          "run_id": "RUN-605176fb",
+          "run_id": "RUN-650f6f24",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -2334,9 +2334,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-605176fb:3",
+          "trace_id": "RUN-650f6f24:3",
           "case_id": "",
-          "run_id": "RUN-605176fb",
+          "run_id": "RUN-650f6f24",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2363,9 +2363,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-605176fb:4",
+          "trace_id": "RUN-650f6f24:4",
           "case_id": "",
-          "run_id": "RUN-605176fb",
+          "run_id": "RUN-650f6f24",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2386,9 +2386,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-605176fb:5",
+          "trace_id": "RUN-650f6f24:5",
           "case_id": "",
-          "run_id": "RUN-605176fb",
+          "run_id": "RUN-650f6f24",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -2417,9 +2417,9 @@
       "steps": 7,
       "trace": [
         {
-          "trace_id": "RUN-9cc4dba7:1",
+          "trace_id": "RUN-68d78639:1",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 0,
           "workflow": "pre_trip",
           "phase": "start",
@@ -2438,9 +2438,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:2",
+          "trace_id": "RUN-68d78639:2",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -2473,9 +2473,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:3",
+          "trace_id": "RUN-68d78639:3",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -2504,9 +2504,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:4",
+          "trace_id": "RUN-68d78639:4",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2533,9 +2533,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:5",
+          "trace_id": "RUN-68d78639:5",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2554,9 +2554,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:6",
+          "trace_id": "RUN-68d78639:6",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2583,9 +2583,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:7",
+          "trace_id": "RUN-68d78639:7",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2612,9 +2612,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:8",
+          "trace_id": "RUN-68d78639:8",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2641,9 +2641,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:9",
+          "trace_id": "RUN-68d78639:9",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -2678,8 +2678,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-9cc4dba7:llm",
-          "run_id": "RUN-9cc4dba7",
+          "trace_id": "RUN-68d78639:llm",
+          "run_id": "RUN-68d78639",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -2693,12 +2693,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "awaiting_approval",
-          "timestamp": "2026-11-10T08:17:49.546950+00:00"
+          "timestamp": "2026-11-11T03:05:23.750967+00:00"
         },
         {
-          "trace_id": "RUN-9cc4dba7:10",
+          "trace_id": "RUN-68d78639:10",
           "case_id": "",
-          "run_id": "RUN-9cc4dba7",
+          "run_id": "RUN-68d78639",
           "step": 7,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -2727,9 +2727,9 @@
       "steps": 1,
       "trace": [
         {
-          "trace_id": "RUN-0c73db2d:1",
+          "trace_id": "RUN-c24c2ff2:1",
           "case_id": "",
-          "run_id": "RUN-0c73db2d",
+          "run_id": "RUN-c24c2ff2",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -2751,9 +2751,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-0c73db2d:2",
+          "trace_id": "RUN-c24c2ff2:2",
           "case_id": "",
-          "run_id": "RUN-0c73db2d",
+          "run_id": "RUN-c24c2ff2",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -2782,9 +2782,9 @@
       "steps": 2,
       "trace": [
         {
-          "trace_id": "RUN-6f422dc9:1",
+          "trace_id": "RUN-bb0d379c:1",
           "case_id": "",
-          "run_id": "RUN-6f422dc9",
+          "run_id": "RUN-bb0d379c",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -2817,9 +2817,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-6f422dc9:2",
+          "trace_id": "RUN-bb0d379c:2",
           "case_id": "",
-          "run_id": "RUN-6f422dc9",
+          "run_id": "RUN-bb0d379c",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -2848,8 +2848,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-6f422dc9:llm",
-          "run_id": "RUN-6f422dc9",
+          "trace_id": "RUN-bb0d379c:llm",
+          "run_id": "RUN-bb0d379c",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -2863,12 +2863,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "needs_human",
-          "timestamp": "2026-11-10T08:17:49.618713+00:00"
+          "timestamp": "2026-11-11T03:05:24.082003+00:00"
         },
         {
-          "trace_id": "RUN-6f422dc9:3",
+          "trace_id": "RUN-bb0d379c:3",
           "case_id": "",
-          "run_id": "RUN-6f422dc9",
+          "run_id": "RUN-bb0d379c",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -2897,9 +2897,9 @@
       "steps": 6,
       "trace": [
         {
-          "trace_id": "RUN-7fe85d86:1",
+          "trace_id": "RUN-deae61b1:1",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -2932,9 +2932,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-7fe85d86:2",
+          "trace_id": "RUN-deae61b1:2",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -2963,9 +2963,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-7fe85d86:3",
+          "trace_id": "RUN-deae61b1:3",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -2992,9 +2992,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-7fe85d86:4",
+          "trace_id": "RUN-deae61b1:4",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -3021,9 +3021,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-7fe85d86:5",
+          "trace_id": "RUN-deae61b1:5",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -3050,9 +3050,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-7fe85d86:6",
+          "trace_id": "RUN-deae61b1:6",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -3087,8 +3087,8 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-7fe85d86:llm",
-          "run_id": "RUN-7fe85d86",
+          "trace_id": "RUN-deae61b1:llm",
+          "run_id": "RUN-deae61b1",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "presentation",
@@ -3102,12 +3102,12 @@
           },
           "transition": "preserve_workflow_outcome",
           "outcome": "completed",
-          "timestamp": "2026-11-10T08:17:49.657730+00:00"
+          "timestamp": "2026-11-11T03:05:24.439851+00:00"
         },
         {
-          "trace_id": "RUN-7fe85d86:7",
+          "trace_id": "RUN-deae61b1:7",
           "case_id": "",
-          "run_id": "RUN-7fe85d86",
+          "run_id": "RUN-deae61b1",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "terminal",
@@ -3136,9 +3136,9 @@
       "steps": 6,
       "trace": [
         {
-          "trace_id": "RUN-1bb7b120:1",
+          "trace_id": "RUN-0daddd12:1",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 1,
           "workflow": "pre_trip",
           "phase": "fetch_trip",
@@ -3171,9 +3171,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-1bb7b120:2",
+          "trace_id": "RUN-0daddd12:2",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 2,
           "workflow": "pre_trip",
           "phase": "fetch_approval",
@@ -3202,9 +3202,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-1bb7b120:3",
+          "trace_id": "RUN-0daddd12:3",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 3,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -3231,9 +3231,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-1bb7b120:4",
+          "trace_id": "RUN-0daddd12:4",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 4,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -3260,9 +3260,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-1bb7b120:5",
+          "trace_id": "RUN-0daddd12:5",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 5,
           "workflow": "pre_trip",
           "phase": "retrieve",
@@ -3289,9 +3289,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-1bb7b120:6",
+          "trace_id": "RUN-0daddd12:6",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "draft",
@@ -3326,9 +3326,9 @@
           "outcome": null
         },
         {
-          "trace_id": "RUN-1bb7b120:7",
+          "trace_id": "RUN-0daddd12:7",
           "case_id": "",
-          "run_id": "RUN-1bb7b120",
+          "run_id": "RUN-0daddd12",
           "step": 6,
           "workflow": "pre_trip",
           "phase": "terminal",
