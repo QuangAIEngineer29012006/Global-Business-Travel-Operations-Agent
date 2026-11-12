@@ -92,3 +92,21 @@ Response: `status=awaiting_approval`, `reason_code=APPROVAL_PENDING`, `artifacts
 - Quang: format report ID (`EXP-` trong fixture vs `RPT-` trong 04); tên 3 tool draft; dispatcher thật nhận `(tool, args, ctx)`; fixture chưa có chunk injection/version-conflict (test đang tự chèn).
 - Vinh: schema `payload` của từng draft; `artifact_type` đang dùng `travel_checklist`, `disruption_escalation_note`, `expense_review`.
 - Minh: `session` chỉ giữ `active_trip_id`; facts luôn đọc lại từ mock.
+
+## 7. Workflow `policy_qa` — hỏi đáp policy, luôn kèm nguồn
+
+Dùng khi user hỏi về quy định/chính sách mà **không** có mã `TRIP`/`EXP` (router nhận ra qua `POLICY_Q_RE`; có mã thì vẫn đi workflow cũ).
+
+Allowlist: chỉ `search_travel_policy`. Luồng: `infer_categories (≤3) → search từng category → clean_evidence (metadata, injection) → kiểm xung đột version → relevance gate → trả lời`.
+
+| Điều kiện | status / reason_code | Evidence |
+|---|---|---|
+| có chunk đủ liên quan (≥ `MIN_TERM_OVERLAP` từ nội dung chung) | `completed` / `POLICY_ANSWER` | ≤ 2 chunk, mỗi chunk có `excerpt` nguyên văn |
+| không chunk nào đủ liên quan | `needs_human` / `NO_POLICY_EVIDENCE` | rỗng, không trích dẫn |
+| cùng `doc_id` khác `version` | `needs_human` / `POLICY_VERSION_CONFLICT` | rỗng |
+| search lỗi hết retry | `needs_human` / mã lỗi | rỗng |
+| hết budget retrieval | `partial` / `BUDGET_EXCEEDED` | rỗng |
+
+Câu trả lời ghép nguyên văn đoạn policy kèm chỉ mục `[1]`, `[2]` khớp với danh sách nguồn (`evidence[i]` = `chunk_id, doc_id, source, section, version, excerpt`). Không dùng LLM để diễn đạt lại: không có bước nào cho phép model thêm claim. Retrieval score không dùng làm bằng chứng; bước `relevance` kiểm tra chunk thực sự chứa các từ khóa của câu hỏi (có mở rộng từ đồng nghĩa trong `QUERY_SYNONYMS`).
+
+Chỉnh độ nhạy: `MIN_TERM_OVERLAP`, `VI_STOPWORDS`, `QUERY_SYNONYMS`, `CATEGORY_HINTS` trong `src/workflows.py`.

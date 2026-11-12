@@ -35,6 +35,7 @@ FAILED_DELIVERY = "failed_delivery"
 REJECTED = "rejected"
 
 PRE_TRIP, IN_TRIP, POST_TRIP = "pre_trip", "in_trip", "post_trip"
+POLICY_QA = "policy_qa"          # hoi dap policy khong can ma chuyen di/bao cao
 
 ROLES = {"employee", "travel_operations_reviewer", "approver"}
 ALLOWED_DELIVERY = {"not_sent", "not_published"}
@@ -53,6 +54,8 @@ IN_TRIP_TOOLS = frozenset({"get_itinerary", "search_travel_policy",
                            "create_escalation_or_support_draft"})
 POST_TRIP_TOOLS = frozenset({"get_expense_report", "calculate_expense_summary",
                              "search_travel_policy", "create_expense_review_draft"})
+
+POLICY_QA_TOOLS = frozenset({"search_travel_policy"})
 
 # --------------------------------------------------------------------------
 # Untrusted-text heuristics
@@ -75,6 +78,35 @@ ID_TOKEN_RE = re.compile(r"\b(?:TRIP|EXP|RPT)-[A-Za-z0-9-]*", re.IGNORECASE)
 DISRUPTION_KW_RE = re.compile(r"(delay|cancel|disrupt|hoãn|trễ|hủy|huỷ|gián đoạn)", re.I)
 PRETRIP_KW_RE = re.compile(r"(chuẩn bị|checklist|điều kiện|đủ điều kiện|công tác|prepare|ready|eligible)", re.I)
 EXPENSE_KW_RE = re.compile(r"(expense|chi phí|báo cáo chi|rà soát báo cáo)", re.I)
+# Cau hoi ve quy dinh/policy (khong co ma): di vao policy_qa va tra loi KEM NGUON trich dan.
+POLICY_Q_RE = re.compile(
+    r"(quy định|quy tắc|quy trình|chính sách|policy|ngưỡng|hạn mức|visa|nhập cảnh|bảo hiểm|"
+    r"chứng từ|hóa đơn|giấy tờ|được phép|có được|có phải|ăn uống|lưu trú|tối đa|bao nhiêu)", re.I)
+# Tu pho thong, bo qua khi do do lien quan giua cau hoi va doan policy.
+VI_STOPWORDS = frozenset((
+    "là của và có được cho tôi bạn gì thế nào như khi các những một này đó không cần phải muốn hỏi xin vui "
+    "lòng với trong để về theo ra sao hay hoặc thì mà đi em anh chị mình ạ nhé nha bị sẽ đã đang rất "
+    "cũng nên thể ở từ tại bởi nếu vậy nhưng còn lại cả hết đây kia the is are what how do does can i "
+    "quy định chính sách policy tắc trình công tác chuyến yêu cầu nhân viên công ty hướng dẫn thông tin "
+    "tài liệu nội dung theo ai nào").split())
+# Mo rong tu khoa cua CAU HOI (khong mo rong chunk) de keyword search hieu cac cach noi gan nghia.
+QUERY_SYNONYMS = {
+    "visa": ("nhập", "cảnh", "giấy", "tờ", "hộ", "chiếu"),
+    "hủy": ("gián", "đoạn", "sự", "cố", "chuyển", "cấp"), "huỷ": ("gián", "đoạn", "sự", "cố", "chuyển", "cấp"),
+    "trễ": ("gián", "đoạn", "sự", "cố", "chuyển", "cấp"), "delay": ("gián", "đoạn", "sự", "cố", "chuyển", "cấp"),
+    "hoãn": ("gián", "đoạn", "sự", "cố", "chuyển", "cấp"),
+    "hóa": ("chứng", "từ"), "chi": ("chứng", "từ"),
+}
+MIN_TERM_OVERLAP = 2      # so tu noi dung chung toi thieu giua cau hoi va chunk de coi la "co evidence"
+POLICY_QA_MAX_CATEGORIES = 3
+POLICY_QA_TOP = 2
+CATEGORY_HINTS = (
+    ("visa", re.compile(r"(visa|nhập cảnh|giấy tờ|hộ chiếu)", re.I)),
+    ("insurance", re.compile(r"(bảo hiểm|gián đoạn|chuyển cấp|sự cố|hủy|huỷ|trễ|delay|hoãn|chuyến bay)", re.I)),
+    ("expense", re.compile(r"(chi phí|chứng từ|hóa đơn|ngưỡng|hạn mức|hoàn ứng|ăn uống|lưu trú)", re.I)),
+    ("approval", re.compile(r"(phê duyệt|duyệt|approval|cam kết)", re.I)),
+    ("travel", re.compile(r"(công tác|chuyến đi|checklist|danh sách kiểm tra|chuẩn bị|đặt vé)", re.I)),
+)
 
 
 # --------------------------------------------------------------------------
@@ -243,6 +275,11 @@ def cite(c: dict) -> dict:
     return out
 
 
+def cite_with_text(c: dict) -> dict:
+    """Evidence tra ve UI: metadata nguon + DOAN TRICH nguyen van cua chunk (de hien thi nguon + noi dung)."""
+    return dict(cite(c), excerpt=c["text"], category=c["category"])
+
+
 def supports(c: dict, terms: list) -> bool:
     """Claim-to-evidence check toi thieu: chunk phai chua cac thuat ngu/so ma claim dua vao."""
     t = c["text"].lower()
@@ -394,7 +431,7 @@ def workflow_pre_trip(ex: Executor, trip_id: str) -> dict:
         if _usable(f):
             for c in f["evidence"]:
                 guidance.append({"category": f["category"], "text": c["text"], "citation": cite(c)})
-                evidence.append(cite(c))
+                evidence.append(cite_with_text(c))
                 st.source_ids.add(c["chunk_id"])
         else:
             gaps.append({"category": f["category"], "reason": _gap_reason(f), "required": f["required"]})
@@ -471,7 +508,7 @@ def workflow_in_trip(ex: Executor, trip_id: str) -> dict:
     sup = [c for c in f["evidence"] if supports(c, ["chuyển cấp"])] if not f["conflicts"] else []
     guidance_ok = bool(sup)
     guidance = [{"text": c["text"], "citation": cite(c)} for c in f["evidence"]] if guidance_ok and not f["conflicts"] else []
-    evidence = [g["citation"] for g in guidance]
+    evidence = [cite_with_text(c) for c in f["evidence"]] if guidance else []
     st.source_ids.update(g["citation"]["chunk_id"] for g in guidance)
     limitations = [] if guidance_ok else [{"category": "insurance", "reason": _gap_reason(f) if not f["evidence"] or f["conflicts"] else "evidence_does_not_support_claim"}]
 
@@ -563,7 +600,7 @@ def workflow_post_trip(ex: Executor, report_id: str) -> dict:
         if sup:
             for c in sup:
                 notes.append({"rule": rule, "text": c["text"], "citation": cite(c)})
-                evidence.append(cite(c))
+                evidence.append(cite_with_text(c))
                 st.source_ids.add(c["chunk_id"])
         else:
             limitations.append({"rule": rule, "reason": _gap_reason(f) if not f["evidence"] or f["conflicts"]
@@ -593,6 +630,74 @@ def workflow_post_trip(ex: Executor, report_id: str) -> dict:
                   data=data, evidence=evidence)
 
 
+
+# --------------------------------------------------------------------------
+# Workflow: policy_qa  (hoi dap policy, moi cau tra loi deu kem nguon)
+# --------------------------------------------------------------------------
+def _terms(text: str) -> set:
+    import unicodedata
+    toks = re.findall(r"\w+", unicodedata.normalize("NFC", text).lower())
+    return {t for t in toks if len(t) > 1 and t not in VI_STOPWORDS}
+
+
+def relevance(question: str, chunk: dict) -> int:
+    """So tu noi dung chung giua cau hoi va (section + text) cua chunk. Retrieval score KHONG du de
+    chung minh evidence, nen day la buoc kiem tra claim-to-evidence toi thieu."""
+    q = _terms(question)
+    q |= {x for t in list(q) for x in QUERY_SYNONYMS.get(t, ())}
+    need = MIN_TERM_OVERLAP if len(q) >= 2 else 1
+    common = len(q & _terms(chunk["section"] + " " + chunk["text"]))
+    return common if common >= need else 0
+
+
+def infer_categories(question: str) -> list:
+    scored = [(len(rx.findall(question)), cat) for cat, rx in CATEGORY_HINTS]
+    ranked = [cat for n, cat in sorted(scored, key=lambda x: -x[0]) if n > 0]
+    for cat in ("travel", "approval", "expense"):      # fallback co gioi han
+        if cat not in ranked:
+            ranked.append(cat)
+    return ranked[:POLICY_QA_MAX_CATEGORIES]
+
+
+def workflow_policy_qa(ex: Executor, question: str) -> dict:
+    st = ex.state
+    q = " ".join(question.split())[:200]
+    cats = infer_categories(question)
+    found, conflicts = [], []
+    for cat in cats:
+        f = retrieve(ex, cat, q, None, 3)
+        if f["error"]:
+            return _read_failure(st, {"error": {"code": f["error"]}}, "POLICY")
+        if f["conflicts"]:
+            conflicts += [{"category": cat, "doc_id": d} for d in f["conflicts"]]
+            continue
+        found += [(relevance(question, c), c) for c in f["evidence"]]
+    found = sorted((x for x in found if x[0] > 0), key=lambda x: -x[0])
+    data = {"question": q, "categories_searched": cats}
+    if conflicts:
+        return finish(st, NEEDS_HUMAN, "POLICY_VERSION_CONFLICT",
+                      "Các phiên bản policy đang mâu thuẫn nên mình không đưa ra câu trả lời hay trích dẫn.",
+                      data=dict(data, conflicts=conflicts), next_action="Chuyển Travel Operations xác nhận phiên bản đúng.")
+    seen, top = set(), []
+    best = found[0][0] if found else 0
+    for score, c in found:
+        if c["chunk_id"] in seen or score < max(MIN_TERM_OVERLAP, (best + 1) // 2):
+            continue                     # chunk phu yeu hon nhieu so voi chunk tot nhat -> bo
+        seen.add(c["chunk_id"])
+        top.append(c)
+        if len(top) == POLICY_QA_TOP:
+            break
+    if not top:
+        return finish(st, NEEDS_HUMAN, "NO_POLICY_EVIDENCE",
+                      "Mình không tìm thấy nội dung phù hợp trong bộ tài liệu policy hiện có, nên không đưa ra "
+                      "câu trả lời và không kèm trích dẫn.",
+                      data=data, next_action="Bạn thử diễn đạt lại, hoặc chuyển Travel Operations.")
+    evidence = [cite_with_text(c) for c in top]
+    body = " ".join(f"{c['text']} [{i}]" for i, c in enumerate(top, 1))
+    msg = (f"Theo tài liệu policy (dữ liệu giả lập): {body} "
+           "Đây là hướng dẫn trong tài liệu, không phải quyết định phê duyệt hay hoàn tiền.")
+    return finish(st, COMPLETED, "POLICY_ANSWER", msg, data=data, evidence=evidence)
+
 # --------------------------------------------------------------------------
 # Router + entrypoint
 # --------------------------------------------------------------------------
@@ -609,6 +714,8 @@ def route(message: str, context: dict, session: Optional[dict] = None) -> tuple:
     trips = [t for t in tokens if t.startswith("TRIP")]
     reps = [t for t in tokens if not t.startswith("TRIP")]
     rid = context.get("report_id") or (reps[0] if reps else None)
+    if not rid and not context.get("trip_id") and not trips and POLICY_Q_RE.search(message):
+        return POLICY_QA, None
     if rid or EXPENSE_KW_RE.search(message):
         return POST_TRIP, rid
     tid = context.get("trip_id") or (trips[0] if trips else None)
@@ -634,6 +741,13 @@ def run_agent(request: dict, dispatcher: Dispatcher, *, session: Optional[dict] 
         st.log("input_check", {"flag": "injection_like_input"}, "flagged", "treated_as_data_only")
     if actor.get("role") not in ROLES or not actor.get("actor_id"):
         return finish(st, REJECTED, "INVALID_ACTOR", "Thiếu hoặc sai vai trò/actor.")
+    if wf == POLICY_QA:
+        ex = Executor(dispatcher, st, POLICY_QA_TOOLS)
+        try:
+            return workflow_policy_qa(ex, message)
+        except BudgetExceeded as e:
+            return finish(st, PARTIAL, "BUDGET_EXCEEDED", "Đạt giới hạn ngân sách bước/retrieval; dừng an toàn.",
+                          data={"limit": str(e)}, next_action="Thử lại hoặc chuyển reviewer.")
     if wf == "unrouted" or not ident:
         return finish(st, NEEDS_INPUT, "MISSING_ID", "Cần mã chuyến đi hoặc mã báo cáo chi phí.",
                       next_action="Vui lòng cung cấp trip_id (TRIP-YYYY-NNN) hoặc report_id (EXP-YYYY-NNN).")

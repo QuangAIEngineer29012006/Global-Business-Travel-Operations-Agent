@@ -8,6 +8,7 @@ export function Status({ value }: { value: string }) {
 }
 
 function policyText(run: Run, citation: Citation) {
+  if (citation.excerpt) return citation.excerpt          // hoi dap policy: doan trich nam ngay trong evidence
   for (const artifact of run.artifacts) {
     const content = artifact.content || {}
     for (const field of ['policy_guidance', 'policy_notes']) {
@@ -20,24 +21,26 @@ function policyText(run: Run, citation: Citation) {
   return null
 }
 
-export function EvidenceList({ run, onOpen }: { run: Run; onOpen: (citation: Citation) => void }) {
-  return <ol className="citation-list" aria-label="Nguồn trích dẫn">
+const preview = (text: string) => text.length > 400 ? `${text.slice(0, 400)}…` : text      // chunk policy ngan -> hien day du
+
+export function EvidenceList({ run, onOpen, caption }: { run: Run; onOpen: (citation: Citation) => void; caption?: string }) {
+  return <>{caption && <small className="citation-caption">{caption}</small>}<ol className="citation-list" aria-label="Nguồn trích dẫn">
     {run.evidence.map((citation, i) => <li key={`${citation.chunk_id}-${i}`}>
-      <button className="citation-item-btn" onClick={() => onOpen(citation)}>
-        <span className="citation-title"><b>{citation.section || citation.doc_id}</b></span>
-        <span className="citation-meta">{citation.chunk_id} · {citation.doc_id} · v{citation.version}</span>
+      <button className="citation-item-btn" title={`${citation.chunk_id} · ${citation.doc_id} · v${citation.version}`} onClick={() => onOpen(citation)}>
+        <span className="citation-title"><b>{citation.section || citation.source || citation.doc_id}</b></span>
+        {citation.source && citation.source !== citation.section && <span className="citation-source">{citation.source}</span>}
+        {citation.excerpt && <span className="citation-excerpt">{preview(citation.excerpt)}</span>}
       </button>
     </li>)}
-  </ol>
+  </ol></>
 }
 
 export function SourceDialog({ run, citation, onClose }: { run: Run; citation: Citation; onClose: () => void }) {
   const text = policyText(run, citation)
   return <Dialog label="Nguồn trích dẫn" backdrop="overlay" className="source-modal" onClose={onClose}>
     <button className="modal-close" aria-label="Đóng nguồn" onClick={onClose}>×</button>
-    <div className="source-header"><span className="eyebrow">{citation.doc_id} · v{citation.version}</span><h2>{citation.section}</h2></div>
+    <div className="source-header"><span className="eyebrow">{citation.source}</span><h2>{citation.section || citation.source}</h2></div>
     <div className="source-card"><p className="source-text">{text || 'Response hiện tại chỉ có metadata nguồn, chưa có nội dung đoạn trích.'}</p></div>
-    <p className="source-path">{citation.source} · {citation.chunk_id}</p>
   </Dialog>
 }
 

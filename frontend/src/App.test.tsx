@@ -63,12 +63,37 @@ describe('Travel UI adapted from the commerce frontend', () => {
 
   it('opens a source already in the response without another backend request', async () => {
     await openChat(); await send()
-    fireEvent.click(screen.getByRole('button', { name: /Checklist.*CHUNK-001/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Checklist.*training\.md/ }))
     expect(within(screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })).getByText('Policy fixture: cần kiểm tra giấy tờ.')).toBeTruthy()
     expect(fetcher.mock.calls.length).toBe(2)
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('dialog', { name: 'Nguồn trích dẫn' })).toBeNull()
     expect(screen.getByRole('dialog', { name: 'Trợ lý công tác' })).toBeTruthy()
+  })
+
+  it('shows the cited policy excerpt for a question without a trip or report ID', async () => {
+    const answer = 'Theo tài liệu policy: Cần xác minh điều kiện nhập cảnh. [1]'
+    const excerpt = 'Nhân viên cần xác minh điều kiện nhập cảnh trước chuyến đi.'
+    const policy: Run = { ...structuredClone(result), workflow: 'policy_qa', status: 'completed', reason_code: 'POLICY_ANSWER',
+      message: answer, data: {}, artifacts: [], next_action: null,
+      evidence: [{ chunk_id: 'CHUNK-005', doc_id: 'DOC-VISA-001', source: 'Hướng dẫn chuẩn bị công tác quốc tế', section: 'Kiểm tra điều kiện nhập cảnh', version: '1.2', excerpt }],
+      llm: { ...result.llm, status: 'skipped', calls: 0, message: answer } }
+    fetcher.mockImplementation(async (path: string) => path === '/api/health'
+      ? response({ status: 'ok', provider: 'fake', model_id: 'fake-test', training_only: true })
+      : response(structuredClone(policy)))
+    await openChat()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Tin nhắn' }), { target: { value: 'Quy định về visa là gì?' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Gửi' }))
+    await screen.findByText(answer)
+    expect(screen.getByText('Nguồn tài liệu')).toBeTruthy()
+    expect(screen.getAllByText(excerpt).length).toBe(1)                       // doan trich hien ngay trong chat
+    expect(screen.queryByText(/CHUNK-005|DOC-VISA-001/)).toBeNull()            // khong lo ma chunk/doc ra giao dien
+    fireEvent.click(screen.getByRole('button', { name: /Kiểm tra điều kiện nhập cảnh.*Hướng dẫn chuẩn bị công tác quốc tế/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })
+    expect(within(dialog).getByText(excerpt)).toBeTruthy()
+    expect(within(dialog).getByRole('heading', { name: 'Kiểm tra điều kiện nhập cảnh' })).toBeTruthy()
+    expect(within(dialog).getByText('Hướng dẫn chuẩn bị công tác quốc tế')).toBeTruthy()
+    expect(within(dialog).queryByText(/CHUNK-005|DOC-VISA-001/)).toBeNull()
   })
 
   it('shows the backend result, draft and trace rather than inventing a status', async () => {
