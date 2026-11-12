@@ -1,0 +1,98 @@
+{
+  "tested_at_utc": "2026-11-11T03:11:51.401289+00:00",
+  "model": "gemini-3.5-flash-lite",
+  "provider": "gemini",
+  "live_api": true,
+  "training_data_only": true,
+  "cases": [
+    {
+      "case": "pre_trip_approved",
+      "passed": true,
+      "seconds": 16.843,
+      "workflow": "pre_trip",
+      "outcome": "completed",
+      "llm_message": "Đã tạo checklist draft (chưa gửi).",
+      "input_tokens": 175,
+      "output_tokens": 7,
+      "retry_count": 0
+    },
+    {
+      "case": "in_trip_delay",
+      "passed": true,
+      "seconds": 2.49,
+      "workflow": "in_trip",
+      "outcome": "completed",
+      "llm_message": "Đã tạo ghi chú chuyển cấp (draft, chưa gửi). Dữ kiện lấy từ itinerary; hướng dẫn lấy từ policy có trích dẫn.",
+      "input_tokens": 161,
+      "output_tokens": 11,
+      "retry_count": 1
+    },
+    {
+      "case": "expense_review",
+      "passed": true,
+      "seconds": 1.936,
+      "workflow": "post_trip",
+      "outcome": "completed",
+      "llm_message": "Đã tạo review draft: không có cờ theo quy tắc ngưỡng đã cấu hình. Chưa phải quyết định hoàn tiền/phê duyệt. Tổng do tool tính: 70.5 USD. Bản nháp DRAFT-2026-003: delivery_status=not_sent.",
+      "input_tokens": 181,
+      "output_tokens": 15,
+      "retry_count": 0
+    },
+    {
+      "case": "pending_approval",
+      "passed": true,
+      "seconds": 5.154,
+      "workflow": "pre_trip",
+      "outcome": "awaiting_approval",
+      "llm_message": "Đã tạo checklist draft. Yêu cầu đang chờ phê duyệt, chưa được duyệt. Chờ người phê duyệt quyết định.",
+      "input_tokens": 175,
+      "output_tokens": 11,
+      "retry_count": 0
+    },
+    {
+      "case": "text_rewrite",
+      "passed": true,
+      "seconds": 5.378,
+      "workflow": "direct",
+      "outcome": "completed",
+      "llm_message": "Tôi bị trễ chuyến bay. Tôi cần được hỗ trợ.",
+      "input_tokens": 289,
+      "output_tokens": 13,
+      "retry_count": 0
+    },
+    {
+      "case": "native_function_call",
+      "passed": true,
+      "seconds": 6.751,
+      "tool": "get_trip_request",
+      "trip_id": "TRIP-2026-001",
+      "observed_status": "pending_approval",
+      "input_tokens": 454,
+      "output_tokens": 30,
+      "retry_count": 0
+    },
+    {
+      "case": "function_response_roundtrip",
+      "passed": true,
+      "seconds": 6.253,
+      "answer": "pending_approval",
+      "input_tokens": 587,
+      "output_tokens": 3,
+      "retry_count": 0
+    },
+    {
+      "case": "live_api_endpoint",
+      "passed": true,
+      "seconds": 5.66,
+      "http_status": 200,
+      "outcome": "awaiting_approval",
+      "observed_approval": "pending",
+      "llm_message": "Đã tạo checklist draft. Yêu cầu đang chờ phê duyệt, chưa được duyệt. Chờ người phê duyệt quyết định.",
+      "input_tokens": 181,
+      "output_tokens": 11,
+      "retry_count": 0
+    }
+  ],
+  "passed": 8,
+  "total": 8
+}
