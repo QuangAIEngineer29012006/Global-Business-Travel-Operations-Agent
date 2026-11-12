@@ -63,7 +63,7 @@ describe('Travel UI adapted from the commerce frontend', () => {
 
   it('opens a source already in the response without another backend request', async () => {
     await openChat(); await send()
-    fireEvent.click(screen.getByRole('button', { name: /Checklist.*CHUNK-001/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Checklist.*training\.md/ }))
     expect(within(screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })).getByText('Policy fixture: cần kiểm tra giấy tờ.')).toBeTruthy()
     expect(fetcher.mock.calls.length).toBe(2)
     fireEvent.keyDown(document, { key: 'Escape' })
@@ -86,8 +86,14 @@ describe('Travel UI adapted from the commerce frontend', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Gửi' }))
     await screen.findByText(answer)
     expect(screen.getByText('Nguồn tài liệu')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: /Kiểm tra điều kiện nhập cảnh.*CHUNK-005/ }))
-    expect(within(screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })).getByText(excerpt)).toBeTruthy()
+    expect(screen.getAllByText(excerpt).length).toBe(1)                       // doan trich hien ngay trong chat
+    expect(screen.queryByText(/CHUNK-005|DOC-VISA-001/)).toBeNull()            // khong lo ma chunk/doc ra giao dien
+    fireEvent.click(screen.getByRole('button', { name: /Kiểm tra điều kiện nhập cảnh.*Hướng dẫn chuẩn bị công tác quốc tế/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })
+    expect(within(dialog).getByText(excerpt)).toBeTruthy()
+    expect(within(dialog).getByRole('heading', { name: 'Kiểm tra điều kiện nhập cảnh' })).toBeTruthy()
+    expect(within(dialog).getByText('Hướng dẫn chuẩn bị công tác quốc tế')).toBeTruthy()
+    expect(within(dialog).queryByText(/CHUNK-005|DOC-VISA-001/)).toBeNull()
   })
 
   it('shows the backend result, draft and trace rather than inventing a status', async () => {

@@ -275,6 +275,11 @@ def cite(c: dict) -> dict:
     return out
 
 
+def cite_with_text(c: dict) -> dict:
+    """Evidence tra ve UI: metadata nguon + DOAN TRICH nguyen van cua chunk (de hien thi nguon + noi dung)."""
+    return dict(cite(c), excerpt=c["text"], category=c["category"])
+
+
 def supports(c: dict, terms: list) -> bool:
     """Claim-to-evidence check toi thieu: chunk phai chua cac thuat ngu/so ma claim dua vao."""
     t = c["text"].lower()
@@ -426,7 +431,7 @@ def workflow_pre_trip(ex: Executor, trip_id: str) -> dict:
         if _usable(f):
             for c in f["evidence"]:
                 guidance.append({"category": f["category"], "text": c["text"], "citation": cite(c)})
-                evidence.append(cite(c))
+                evidence.append(cite_with_text(c))
                 st.source_ids.add(c["chunk_id"])
         else:
             gaps.append({"category": f["category"], "reason": _gap_reason(f), "required": f["required"]})
@@ -503,7 +508,7 @@ def workflow_in_trip(ex: Executor, trip_id: str) -> dict:
     sup = [c for c in f["evidence"] if supports(c, ["chuyển cấp"])] if not f["conflicts"] else []
     guidance_ok = bool(sup)
     guidance = [{"text": c["text"], "citation": cite(c)} for c in f["evidence"]] if guidance_ok and not f["conflicts"] else []
-    evidence = [g["citation"] for g in guidance]
+    evidence = [cite_with_text(c) for c in f["evidence"]] if guidance else []
     st.source_ids.update(g["citation"]["chunk_id"] for g in guidance)
     limitations = [] if guidance_ok else [{"category": "insurance", "reason": _gap_reason(f) if not f["evidence"] or f["conflicts"] else "evidence_does_not_support_claim"}]
 
@@ -595,7 +600,7 @@ def workflow_post_trip(ex: Executor, report_id: str) -> dict:
         if sup:
             for c in sup:
                 notes.append({"rule": rule, "text": c["text"], "citation": cite(c)})
-                evidence.append(cite(c))
+                evidence.append(cite_with_text(c))
                 st.source_ids.add(c["chunk_id"])
         else:
             limitations.append({"rule": rule, "reason": _gap_reason(f) if not f["evidence"] or f["conflicts"]
@@ -687,7 +692,7 @@ def workflow_policy_qa(ex: Executor, question: str) -> dict:
                       "Mình không tìm thấy nội dung phù hợp trong bộ tài liệu policy hiện có, nên không đưa ra "
                       "câu trả lời và không kèm trích dẫn.",
                       data=data, next_action="Bạn thử diễn đạt lại, hoặc chuyển Travel Operations.")
-    evidence = [dict(cite(c), excerpt=c["text"], category=c["category"]) for c in top]
+    evidence = [cite_with_text(c) for c in top]
     body = " ".join(f"{c['text']} [{i}]" for i, c in enumerate(top, 1))
     msg = (f"Theo tài liệu policy (dữ liệu giả lập): {body} "
            "Đây là hướng dẫn trong tài liệu, không phải quyết định phê duyệt hay hoàn tiền.")

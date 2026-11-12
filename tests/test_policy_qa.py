@@ -129,6 +129,22 @@ def test_trace_records_search_steps_and_terminal():
     assert [t["action"] for t in r["trace"]].count("search_travel_policy") == r["steps"] and r["trace"][-1]["action"] == "terminal"
 
 
+def test_every_workflow_evidence_carries_source_and_verbatim_excerpt():
+    """Moi workflow (khong chi policy_qa) phai tra evidence co doan trich de UI hien nguon + noi dung."""
+    ms = MockSystems()
+    by_id = {c["chunk_id"]: c for c in ms.chunks}
+    runs = [ask("Chuẩn bị công tác", ms, actor=("employee", "EMP-002"), ctx={"trip_id": "TRIP-2026-002"}),
+            ask("Chuyến bay bị delay", ms, actor=("employee", "EMP-002"), ctx={"trip_id": "TRIP-2026-002"}),
+            ask("Rà soát báo cáo", ms, actor=("employee", "EMP-003"), ctx={"report_id": "EXP-2026-003"})]
+    assert [r["workflow"] for r in runs] == ["pre_trip", "in_trip", "post_trip"]
+    for r in runs:
+        assert r["evidence"], r["workflow"]
+        for e in r["evidence"]:
+            c = by_id[e["chunk_id"]]
+            assert e["excerpt"] == c["text"] and e["category"] == c["category"], (r["workflow"], e["chunk_id"])
+            assert (e["doc_id"], e["version"], e["section"], e["source"]) == (c["doc_id"], c["version"], c["section"], c["source"])
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_")]
     failed = 0
