@@ -8,6 +8,7 @@ export function Status({ value }: { value: string }) {
 }
 
 function policyText(run: Run, citation: Citation) {
+  if (citation.excerpt) return citation.excerpt          // hoi dap policy: doan trich nam ngay trong evidence
   for (const artifact of run.artifacts) {
     const content = artifact.content || {}
     for (const field of ['policy_guidance', 'policy_notes']) {
@@ -20,15 +21,18 @@ function policyText(run: Run, citation: Citation) {
   return null
 }
 
-export function EvidenceList({ run, onOpen }: { run: Run; onOpen: (citation: Citation) => void }) {
-  return <ol className="citation-list" aria-label="Nguồn trích dẫn">
+const preview = (text: string) => text.length > 140 ? `${text.slice(0, 140)}…` : text
+
+export function EvidenceList({ run, onOpen, caption }: { run: Run; onOpen: (citation: Citation) => void; caption?: string }) {
+  return <>{caption && <small className="citation-caption">{caption}</small>}<ol className="citation-list" aria-label="Nguồn trích dẫn">
     {run.evidence.map((citation, i) => <li key={`${citation.chunk_id}-${i}`}>
       <button className="citation-item-btn" onClick={() => onOpen(citation)}>
         <span className="citation-title"><b>{citation.section || citation.doc_id}</b></span>
         <span className="citation-meta">{citation.chunk_id} · {citation.doc_id} · v{citation.version}</span>
+        {citation.excerpt && <span className="citation-excerpt">{preview(citation.excerpt)}</span>}
       </button>
     </li>)}
-  </ol>
+  </ol></>
 }
 
 export function SourceDialog({ run, citation, onClose }: { run: Run; citation: Citation; onClose: () => void }) {

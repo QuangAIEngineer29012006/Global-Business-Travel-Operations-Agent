@@ -97,6 +97,8 @@
 .travel-app .chat-compose input { min-width: 0; border-color: #939987; }
 .travel-app .chat-footnote { color: #5c6055; }
 .retry-message { margin-top: 8px; }
+.citation-caption { display: block; margin-top: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.citation-excerpt { margin-top: 4px; font-size: 12px; line-height: 1.45; color: var(--ink); }
 .travel-app .source-modal { width: min(650px, 100%); max-height: 85dvh; overflow: auto; }
 .travel-app .source-path { overflow-wrap: anywhere; }
 .travel-app > .overlay { z-index: 70; }

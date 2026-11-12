@@ -1,5 +1,5 @@
 export type Actor = { role: 'employee' | 'travel_operations_reviewer' | 'approver'; actor_id: string }
-export type Citation = { chunk_id: string; doc_id: string; source: string; section: string; version: string }
+export type Citation = { chunk_id: string; doc_id: string; source: string; section: string; version: string; excerpt?: string; category?: string }
 export type Artifact = {
   draft_id: string; artifact_type: string; status: string; delivery_status: string; source_ids?: string[];
   content?: Record<string, unknown>
@@ -23,7 +23,7 @@ export const statusLabels: Record<string, string> = {
   needs_human: 'Cần người phụ trách', rejected: 'Từ chối truy cập', failed_validation: 'Dữ liệu chưa hợp lệ',
   partial: 'Hoàn tất một phần', failed_delivery: 'Chưa xác nhận kết quả',
 }
-export const workflowLabels: Record<string, string> = { pre_trip: 'Trước chuyến đi', in_trip: 'Trong chuyến đi', post_trip: 'Sau chuyến đi', direct: 'Hỗ trợ văn bản', unrouted: 'Cần mã tham chiếu' }
+export const workflowLabels: Record<string, string> = { pre_trip: 'Trước chuyến đi', in_trip: 'Trong chuyến đi', post_trip: 'Sau chuyến đi', direct: 'Hỗ trợ văn bản', policy_qa: 'Hỏi đáp chính sách', unrouted: 'Cần mã tham chiếu' }
 export const artifactLabels: Record<string, string> = { travel_checklist: 'Checklist công tác', disruption_escalation_note: 'Ghi chú chuyển cấp', expense_review: 'Rà soát chi phí' }
 export const actors: { label: string; value: Actor }[] = [
   ...['001', '002', '003', '004', '005', '006'].map(id => ({ label: `Nhân viên EMP-${id}`, value: { role: 'employee' as const, actor_id: `EMP-${id}` } })),

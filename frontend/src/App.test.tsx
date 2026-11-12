@@ -71,6 +71,25 @@ describe('Travel UI adapted from the commerce frontend', () => {
     expect(screen.getByRole('dialog', { name: 'Trợ lý công tác' })).toBeTruthy()
   })
 
+  it('shows the cited policy excerpt for a question without a trip or report ID', async () => {
+    const answer = 'Theo tài liệu policy: Cần xác minh điều kiện nhập cảnh. [1]'
+    const excerpt = 'Nhân viên cần xác minh điều kiện nhập cảnh trước chuyến đi.'
+    const policy: Run = { ...structuredClone(result), workflow: 'policy_qa', status: 'completed', reason_code: 'POLICY_ANSWER',
+      message: answer, data: {}, artifacts: [], next_action: null,
+      evidence: [{ chunk_id: 'CHUNK-005', doc_id: 'DOC-VISA-001', source: 'Hướng dẫn chuẩn bị công tác quốc tế', section: 'Kiểm tra điều kiện nhập cảnh', version: '1.2', excerpt }],
+      llm: { ...result.llm, status: 'skipped', calls: 0, message: answer } }
+    fetcher.mockImplementation(async (path: string) => path === '/api/health'
+      ? response({ status: 'ok', provider: 'fake', model_id: 'fake-test', training_only: true })
+      : response(structuredClone(policy)))
+    await openChat()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Tin nhắn' }), { target: { value: 'Quy định về visa là gì?' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Gửi' }))
+    await screen.findByText(answer)
+    expect(screen.getByText('Nguồn tài liệu')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: /Kiểm tra điều kiện nhập cảnh.*CHUNK-005/ }))
+    expect(within(screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })).getByText(excerpt)).toBeTruthy()
+  })
+
   it('shows the backend result, draft and trace rather than inventing a status', async () => {
     await openChat(); await send()
     fireEvent.click(screen.getByRole('button', { name: /Xem kết quả và trace/ }))

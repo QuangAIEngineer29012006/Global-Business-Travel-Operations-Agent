@@ -127,7 +127,7 @@ class MockSystems:
             "get_itinerary": ({INT}, ALL_ROLES, S_TRIP, self.get_itinerary),
             "get_approval_status": ({PRE}, ALL_ROLES, S_TRIP, self.get_approval_status),
             "request_approval": ({PRE}, DRAFT_ROLES, S_APPROVAL, self.request_approval),
-            "search_travel_policy": ({PRE, INT, POST}, ALL_ROLES, S_SEARCH, self.search_travel_policy),
+            "search_travel_policy": ({PRE, INT, POST, "policy_qa"}, ALL_ROLES, S_SEARCH, self.search_travel_policy),
             "get_expense_report": ({POST}, ALL_ROLES, S_REPORT, self.get_expense_report),
             "calculate_expense_summary": ({POST}, ALL_ROLES, S_REPORT, self.calculate_expense_summary),
             "create_travel_checklist_draft": ({PRE}, DRAFT_ROLES, S_DRAFT, lambda a, ctx: self._draft("travel_checklist", a, ctx)),
