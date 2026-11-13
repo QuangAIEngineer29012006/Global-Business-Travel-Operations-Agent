@@ -86,7 +86,7 @@ describe('Travel UI adapted from the commerce frontend', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Gửi' }))
     await screen.findByText(answer)
     expect(screen.getByText('Nguồn tài liệu')).toBeTruthy()
-    expect(screen.getAllByText(excerpt).length).toBe(1)                       // doan trich hien ngay trong chat
+    expect(screen.queryByText(excerpt)).toBeNull()                            // chat chi hien ten, chua hien noi dung trich
     expect(screen.queryByText(/CHUNK-005|DOC-VISA-001/)).toBeNull()            // khong lo ma chunk/doc ra giao dien
     fireEvent.click(screen.getByRole('button', { name: /Kiểm tra điều kiện nhập cảnh.*Hướng dẫn chuẩn bị công tác quốc tế/ }))
     const dialog = screen.getByRole('dialog', { name: 'Nguồn trích dẫn' })

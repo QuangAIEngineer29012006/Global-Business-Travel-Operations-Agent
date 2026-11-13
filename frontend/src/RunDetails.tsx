@@ -21,15 +21,12 @@ function policyText(run: Run, citation: Citation) {
   return null
 }
 
-const preview = (text: string) => text.length > 400 ? `${text.slice(0, 400)}…` : text      // chunk policy ngan -> hien day du
-
 export function EvidenceList({ run, onOpen, caption }: { run: Run; onOpen: (citation: Citation) => void; caption?: string }) {
   return <>{caption && <small className="citation-caption">{caption}</small>}<ol className="citation-list" aria-label="Nguồn trích dẫn">
     {run.evidence.map((citation, i) => <li key={`${citation.chunk_id}-${i}`}>
       <button className="citation-item-btn" title={`${citation.chunk_id} · ${citation.doc_id} · v${citation.version}`} onClick={() => onOpen(citation)}>
         <span className="citation-title"><b>{citation.section || citation.source || citation.doc_id}</b></span>
         {citation.source && citation.source !== citation.section && <span className="citation-source">{citation.source}</span>}
-        {citation.excerpt && <span className="citation-excerpt">{preview(citation.excerpt)}</span>}
       </button>
     </li>)}
   </ol></>
